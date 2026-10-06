@@ -139,76 +139,79 @@
         <!-- Catalog Grid -->
         <div id="catalogGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Item 1 -->
-          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+          <div id="card-prod-1" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+            <div class="relative">
+              <img id="img-prod-1" src="https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80" alt="Salsa de Tomate Especial" class="h-44 w-full object-cover">
+              <span class="absolute top-3 left-3 bg-red-700 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">Salsas Tradicionales</span>
+              <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur text-white text-xs font-bold px-2 py-0.5 rounded shadow">EAN: 7701234567890</span>
+            </div>
             <div class="p-5 space-y-3">
-              <div class="flex justify-between items-start">
-                <span class="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full">Salsas Tradicionales</span>
-                <span class="text-xs font-bold text-slate-400">EAN: 7701234567890</span>
-              </div>
-              <h3 class="font-bold text-slate-900 text-lg">Salsa de Tomate Especial 500ml</h3>
-              <p class="text-xs text-slate-600 leading-relaxed">
+              <h3 id="name-prod-1" class="font-bold text-slate-900 text-lg">Salsa de Tomate Especial 500ml</h3>
+              <p id="desc-prod-1" class="text-xs text-slate-600 leading-relaxed">
                 Salsa elaborada con tomates seleccionados, consistencia espesa ideal para comidas rápidas y restaurantes.
               </p>
               <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1 text-slate-700">
-                <p><strong>Presentación:</strong> Frasco PET 500 ml</p>
-                <p><strong>Características:</strong> Producto nacional, sin conservantes excesivos.</p>
-                <p><strong>Stock en Bodega:</strong> <span class="font-bold text-emerald-700">120 Unidades</span></p>
+                <p><strong>Presentación:</strong> <span id="pres-prod-1">Frasco PET 500 ml</span></p>
+                <p><strong>Características:</strong> <span id="charac-prod-1">Producto nacional, sin conservantes excesivos.</span></p>
+                <p><strong>Stock en Bodega:</strong> <span id="stock-prod-1" class="font-bold text-emerald-700">120 Unidades</span></p>
               </div>
             </div>
             <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
-              <span class="text-lg font-bold text-red-700">$8.500 COP</span>
-              <button onclick="editProduct('Salsa de Tomate Especial 500ml')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded">
-                ✏️ Editar Descripción
+              <span id="price-prod-1" class="text-lg font-bold text-red-700">$8.500 COP</span>
+              <button onclick="openEditProductModal('prod-1', 'Salsa de Tomate Especial 500ml', 'Salsas Tradicionales', 'Salsa elaborada con tomates seleccionados, consistencia espesa ideal para comidas rápidas y restaurantes.', 'Producto nacional, sin conservantes excesivos.', 'Frasco PET 500 ml', 'Unidad', 8500, 120, 15, '7701234567890', 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center space-x-1">
+                <span>⚙️ Editar Producto Completo</span>
               </button>
             </div>
           </div>
 
           <!-- Item 2 -->
-          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+          <div id="card-prod-2" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+            <div class="relative">
+              <img id="img-prod-2" src="https://images.unsplash.com/photo-1628416027962-e64e5264b38d?auto=format&fit=crop&w=600&q=80" alt="Salsa de Ajo Casera" class="h-44 w-full object-cover">
+              <span class="absolute top-3 left-3 bg-red-700 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">Salsas Tradicionales</span>
+              <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur text-white text-xs font-bold px-2 py-0.5 rounded shadow">EAN: 7701234567891</span>
+            </div>
             <div class="p-5 space-y-3">
-              <div class="flex justify-between items-start">
-                <span class="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full">Salsas Tradicionales</span>
-                <span class="text-xs font-bold text-slate-400">EAN: 7701234567891</span>
-              </div>
-              <h3 class="font-bold text-slate-900 text-lg">Salsa de Ajo Casera 250ml</h3>
-              <p class="text-xs text-slate-600 leading-relaxed">
+              <h3 id="name-prod-2" class="font-bold text-slate-900 text-lg">Salsa de Ajo Casera 250ml</h3>
+              <p id="desc-prod-2" class="text-xs text-slate-600 leading-relaxed">
                 Salsa sabor intenso a ajo natural con toques de finas hierbas. Ideal para carnes, patacones y aperitivos.
               </p>
               <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1 text-slate-700">
-                <p><strong>Presentación:</strong> Botella PET 250 ml</p>
-                <p><strong>Características:</strong> Sabor intenso casero tradicional.</p>
-                <p><strong>Stock en Bodega:</strong> <span class="font-bold text-emerald-700">45 Unidades</span></p>
+                <p><strong>Presentación:</strong> <span id="pres-prod-2">Botella PET 250 ml</span></p>
+                <p><strong>Características:</strong> <span id="charac-prod-2">Sabor intenso casero tradicional.</span></p>
+                <p><strong>Stock en Bodega:</strong> <span id="stock-prod-2" class="font-bold text-emerald-700">45 Unidades</span></p>
               </div>
             </div>
             <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
-              <span class="text-lg font-bold text-red-700">$6.200 COP</span>
-              <button onclick="editProduct('Salsa de Ajo Casera 250ml')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded">
-                ✏️ Editar Descripción
+              <span id="price-prod-2" class="text-lg font-bold text-red-700">$6.200 COP</span>
+              <button onclick="openEditProductModal('prod-2', 'Salsa de Ajo Casera 250ml', 'Salsas Tradicionales', 'Salsa sabor intenso a ajo natural con toques de finas hierbas. Ideal para carnes, patacones y aperitivos.', 'Sabor intenso casero tradicional.', 'Botella PET 250 ml', 'Unidad', 6200, 45, 10, '7701234567891', 'https://images.unsplash.com/photo-1628416027962-e64e5264b38d?auto=format&fit=crop&w=600&q=80')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center space-x-1">
+                <span>⚙️ Editar Producto Completo</span>
               </button>
             </div>
           </div>
 
           <!-- Item 3 -->
-          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+          <div id="card-prod-3" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+            <div class="relative">
+              <img id="img-prod-3" src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" alt="Aderezo BBQ Ahumado" class="h-44 w-full object-cover">
+              <span class="absolute top-3 left-3 bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">Aderezos Especiales</span>
+              <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur text-white text-xs font-bold px-2 py-0.5 rounded shadow">EAN: 7701234567892</span>
+            </div>
             <div class="p-5 space-y-3">
-              <div class="flex justify-between items-start">
-                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">Aderezos Especiales</span>
-                <span class="text-xs font-bold text-slate-400">EAN: 7701234567892</span>
-              </div>
-              <h3 class="font-bold text-slate-900 text-lg">Aderezo BBQ Ahumado 1kg</h3>
-              <p class="text-xs text-slate-600 leading-relaxed">
+              <h3 id="name-prod-3" class="font-bold text-slate-900 text-lg">Aderezo BBQ Ahumado 1kg</h3>
+              <p id="desc-prod-3" class="text-xs text-slate-600 leading-relaxed">
                 Salsa BBQ estilo americano con sabor ahumado profundo y nota dulce refinada. Uso industrial y restaurantes.
               </p>
               <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1 text-slate-700">
-                <p><strong>Presentación:</strong> Galón PET 1000 gr</p>
-                <p><strong>Características:</strong> Fórmula concentrada ahumada gourmet.</p>
-                <p><strong>Stock en Bodega:</strong> <span class="font-bold text-amber-600">8 Unidades (Stock Bajo)</span></p>
+                <p><strong>Presentación:</strong> <span id="pres-prod-3">Galón PET 1000 gr</span></p>
+                <p><strong>Características:</strong> <span id="charac-prod-3">Fórmula concentrada ahumada gourmet.</span></p>
+                <p><strong>Stock en Bodega:</strong> <span id="stock-prod-3" class="font-bold text-amber-600">8 Unidades (Stock Bajo)</span></p>
               </div>
             </div>
             <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
-              <span class="text-lg font-bold text-red-700">$24.500 COP</span>
-              <button onclick="editProduct('Aderezo BBQ Ahumado 1kg')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded">
-                ✏️ Editar Descripción
+              <span id="price-prod-3" class="text-lg font-bold text-red-700">$24.500 COP</span>
+              <button onclick="openEditProductModal('prod-3', 'Aderezo BBQ Ahumado 1kg', 'Aderezos Especiales', 'Salsa BBQ estilo americano con sabor ahumado profundo y nota dulce refinada. Uso industrial y restaurantes.', 'Fórmula concentrada ahumada gourmet.', 'Galón PET 1000 gr', 'Unidad', 24500, 8, 10, '7701234567892', 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center space-x-1">
+                <span>⚙️ Editar Producto Completo</span>
               </button>
             </div>
           </div>
@@ -516,33 +519,64 @@
 
     <!-- MODAL AGREGAR PRODUCTO -->
     <div id="modalAddProduct" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+      <div class="bg-white rounded-xl max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b pb-3">
-          <h3 class="font-bold text-slate-900 text-lg">➕ Agregar Nuevo Producto al Catálogo</h3>
+          <h3 class="font-bold text-slate-900 text-lg">➕ Agregar Nuevo Producto al Catálogo de Fábrica</h3>
           <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
         </div>
         <div class="space-y-3 text-xs">
-          <div>
-            <label class="font-bold text-slate-700 block mb-1">Nombre del Producto</label>
-            <input type="text" id="newProdName" placeholder="Ej: Salsa Tártara Gourmet 500ml" class="w-full border p-2 rounded">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Nombre del Producto *</label>
+              <input type="text" id="newProdName" placeholder="Ej: Salsa Tártara Gourmet 500ml" class="w-full border p-2 rounded">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Categoría</label>
+              <select id="newProdCategory" class="w-full border p-2 rounded">
+                <option value="Salsas Tradicionales">Salsas Tradicionales</option>
+                <option value="Aderezos Especiales">Aderezos Especiales</option>
+                <option value="Línea Gourmet & Picantes">Línea Gourmet & Picantes</option>
+              </select>
+            </div>
           </div>
+
           <div>
             <label class="font-bold text-slate-700 block mb-1">Descripción Comercial</label>
             <textarea id="newProdDesc" rows="2" placeholder="Describa el sabor, ingredientes principales y recomendaciones..." class="w-full border p-2 rounded"></textarea>
           </div>
+
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Características Físicas / Gastronómicas</label>
+            <input type="text" id="newProdCharac" placeholder="Ej: Elaborada con pepinillos, finas hierbas y base cremoso especial." class="w-full border p-2 rounded">
+          </div>
+
+          <!-- PHOTO SELECTION & URL -->
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+            <label class="font-bold text-slate-800 block">📷 Fotografía del Producto (URL o Selección Rápida)</label>
+            <input type="url" id="newProdPhoto" placeholder="https://ejemplo.com/fotos/salsa_tartara.jpg" class="w-full border p-2 rounded bg-white">
+            <div class="flex items-center space-x-2 pt-1">
+              <span class="text-[11px] text-slate-500 font-semibold">Preajustes de foto:</span>
+              <button onclick="document.getElementById('newProdPhoto').value='https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80'" class="px-2 py-0.5 bg-red-100 text-red-800 text-[10px] font-bold rounded">🍅 Tomate</button>
+              <button onclick="document.getElementById('newProdPhoto').value='https://images.unsplash.com/photo-1628416027962-e64e5264b38d?auto=format&fit=crop&w=600&q=80'" class="px-2 py-0.5 bg-slate-200 text-slate-800 text-[10px] font-bold rounded">🧄 Ajo</button>
+              <button onclick="document.getElementById('newProdPhoto').value='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80'" class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">🍖 BBQ</button>
+              <button onclick="document.getElementById('newProdPhoto').value='https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80'" class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded">🥗 Tártara</button>
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="font-bold text-slate-700 block mb-1">Presentación</label>
               <input type="text" id="newProdPres" placeholder="Ej: Frasco PET 500 ml" class="w-full border p-2 rounded">
             </div>
             <div>
-              <label class="font-bold text-slate-700 block mb-1">Precio ($ COP)</label>
+              <label class="font-bold text-slate-700 block mb-1">Precio ($ COP) *</label>
               <input type="number" id="newProdPrice" placeholder="Ej: 9800" class="w-full border p-2 rounded">
             </div>
           </div>
+
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="font-bold text-slate-700 block mb-1">Stock Inicial</label>
+              <label class="font-bold text-slate-700 block mb-1">Stock Inicial Bodega</label>
               <input type="number" id="newProdStock" placeholder="100" class="w-full border p-2 rounded">
             </div>
             <div>
@@ -554,6 +588,98 @@
         <div class="flex justify-end space-x-2 border-t pt-3">
           <button onclick="closeAddProductModal()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg">Cancelar</button>
           <button onclick="saveNewProduct()" class="px-4 py-2 bg-red-700 text-white text-xs font-bold rounded-lg hover:bg-red-800">Guardar en Catálogo & PostgreSQL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL EDITAR PRODUCTO COMPLETO -->
+    <div id="modalEditProduct" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="font-bold text-slate-900 text-lg">⚙️ Editar Producto Completo del Catálogo</h3>
+          <button onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+
+        <input type="hidden" id="editProdId">
+
+        <div class="space-y-3 text-xs">
+          <!-- Vista Previa de la Foto Actual -->
+          <div class="flex items-center space-x-4 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+            <img id="editProdPreviewImg" src="" alt="Previsualización" class="w-16 h-16 object-cover rounded-lg border border-slate-300">
+            <div>
+              <span class="font-bold text-slate-800 text-sm" id="editProdPreviewTitle">Salsa de Tomate</span>
+              <p class="text-slate-500 text-[11px]">Modifique cualquier parámetro técnico, foto, precio o existencias.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Nombre del Producto</label>
+              <input type="text" id="editProdName" class="w-full border p-2 rounded font-semibold">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Categoría</label>
+              <select id="editProdCategory" class="w-full border p-2 rounded">
+                <option value="Salsas Tradicionales">Salsas Tradicionales</option>
+                <option value="Aderezos Especiales">Aderezos Especiales</option>
+                <option value="Línea Gourmet & Picantes">Línea Gourmet & Picantes</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Descripción Comercial</label>
+            <textarea id="editProdDesc" rows="2" class="w-full border p-2 rounded"></textarea>
+          </div>
+
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Características Gastronómicas</label>
+            <input type="text" id="editProdCharac" class="w-full border p-2 rounded">
+          </div>
+
+          <!-- FOTO DEL PRODUCTO -->
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+            <label class="font-bold text-slate-800 block">📷 Anexar / Cambiar URL Fotografía del Producto</label>
+            <input type="url" id="editProdPhoto" oninput="document.getElementById('editProdPreviewImg').src=this.value" class="w-full border p-2 rounded bg-white">
+            <div class="flex items-center space-x-2 pt-1">
+              <span class="text-[11px] text-slate-500 font-semibold">Banco de fotos:</span>
+              <button onclick="document.getElementById('editProdPhoto').value='https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80'; document.getElementById('editProdPreviewImg').src=this.previousElementSibling.previousElementSibling.value" class="px-2 py-0.5 bg-red-100 text-red-800 text-[10px] font-bold rounded">🍅 Tomate</button>
+              <button onclick="document.getElementById('editProdPhoto').value='https://images.unsplash.com/photo-1628416027962-e64e5264b38d?auto=format&fit=crop&w=600&q=80'; document.getElementById('editProdPreviewImg').src=this.previousElementSibling.previousElementSibling.value" class="px-2 py-0.5 bg-slate-200 text-slate-800 text-[10px] font-bold rounded">🧄 Ajo</button>
+              <button onclick="document.getElementById('editProdPhoto').value='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80'; document.getElementById('editProdPreviewImg').src=this.previousElementSibling.previousElementSibling.value" class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">🍖 BBQ</button>
+              <button onclick="document.getElementById('editProdPhoto').value='https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80'; document.getElementById('editProdPreviewImg').src=this.previousElementSibling.previousElementSibling.value" class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded">🥗 Tártara</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Presentación Física</label>
+              <input type="text" id="editProdPres" class="w-full border p-2 rounded">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Precio ($ COP)</label>
+              <input type="number" id="editProdPrice" class="w-full border p-2 rounded font-bold text-red-700">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Stock en Bodega</label>
+              <input type="number" id="editProdStock" class="w-full border p-2 rounded font-bold text-emerald-700">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Stock Mínimo</label>
+              <input type="number" id="editProdMinStock" class="w-full border p-2 rounded">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">EAN-13 Barcode</label>
+              <input type="text" id="editProdBarcode" class="w-full border p-2 rounded">
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-2 border-t pt-3">
+          <button onclick="closeEditProductModal()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg">Cancelar</button>
+          <button onclick="saveEditProduct()" class="px-4 py-2 bg-red-700 text-white text-xs font-bold rounded-lg hover:bg-red-800">Actualizar Producto en PostgreSQL</button>
         </div>
       </div>
     </div>
@@ -684,10 +810,13 @@
 
     function saveNewProduct() {
       const name = document.getElementById('newProdName').value.trim();
+      const cat = document.getElementById('newProdCategory').value;
       const desc = document.getElementById('newProdDesc').value.trim();
+      const charac = document.getElementById('newProdCharac').value.trim();
+      const photo = document.getElementById('newProdPhoto').value.trim() || 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80';
       const pres = document.getElementById('newProdPres').value.trim();
       const price = document.getElementById('newProdPrice').value.trim();
-      const stock = document.getElementById('newProdStock').value.trim();
+      const stock = document.getElementById('newProdStock').value.trim() || 100;
       const barcode = document.getElementById('newProdBarcode').value.trim();
 
       if (!name || !price) {
@@ -695,40 +824,103 @@
         return;
       }
 
+      const prodId = 'prod-' + Date.now();
       const grid = document.getElementById('catalogGrid');
       const newCard = document.createElement('div');
-      newCard.className = 'bg-white rounded-xl border border-emerald-300 shadow-md overflow-hidden flex flex-col justify-between';
+      newCard.id = 'card-' + prodId;
+      newCard.className = 'bg-white rounded-xl border border-emerald-300 shadow-md overflow-hidden flex flex-col justify-between hover:shadow-lg transition';
       newCard.innerHTML = `
+        <div class="relative">
+          <img id="img-${prodId}" src="${photo}" alt="${name}" class="h-44 w-full object-cover">
+          <span class="absolute top-3 left-3 bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">${cat}</span>
+          <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur text-white text-xs font-bold px-2 py-0.5 rounded shadow">EAN: ${barcode || 'N/A'}</span>
+        </div>
         <div class="p-5 space-y-3">
-          <div class="flex justify-between items-start">
-            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">Nuevo en Catálogo</span>
-            <span class="text-xs font-bold text-slate-400">EAN: ${barcode || 'N/A'}</span>
-          </div>
-          <h3 class="font-bold text-slate-900 text-lg">${name}</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">${desc || 'Sin descripción adicional.'}</p>
+          <h3 id="name-${prodId}" class="font-bold text-slate-900 text-lg">${name}</h3>
+          <p id="desc-${prodId}" class="text-xs text-slate-600 leading-relaxed">${desc || 'Sin descripción adicional.'}</p>
           <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1 text-slate-700">
-            <p><strong>Presentación:</strong> ${pres || 'Unidad'}</p>
-            <p><strong>Stock en Bodega:</strong> <span class="font-bold text-emerald-700">${stock || 100} Unidades</span></p>
+            <p><strong>Presentación:</strong> <span id="pres-${prodId}">${pres || 'Unidad'}</span></p>
+            <p><strong>Características:</strong> <span id="charac-${prodId}">${charac || 'Fórmula tradicional de fábrica.'}</span></p>
+            <p><strong>Stock en Bodega:</strong> <span id="stock-${prodId}" class="font-bold text-emerald-700">${stock} Unidades</span></p>
           </div>
         </div>
         <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
-          <span class="text-lg font-bold text-red-700">$${Number(price).toLocaleString('es-CO')} COP</span>
-          <button onclick="editProduct('${name}')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded">
-            ✏️ Editar Descripción
+          <span id="price-${prodId}" class="text-lg font-bold text-red-700">$${Number(price).toLocaleString('es-CO')} COP</span>
+          <button onclick="openEditProductModal('${prodId}', '${name}', '${cat}', '${desc.replace(/'/g, "\\'")}', '${charac.replace(/'/g, "\\'")}', '${pres}', 'Unidad', ${price}, ${stock}, 10, '${barcode}', '${photo}')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center space-x-1">
+            <span>⚙️ Editar Producto Completo</span>
           </button>
         </div>
       `;
 
       grid.prepend(newCard);
       closeAddProductModal();
-      alert('¡Producto "' + name + '" registrado exitosamente en el catálogo de la fábrica y sincronizado con la API PostgreSQL!');
+      alert('¡Producto "' + name + '" con fotografía anexada registrado exitosamente en el catálogo de la fábrica y sincronizado con PostgreSQL!');
     }
 
-    function editProduct(productName) {
-      const newDesc = prompt('Editar descripción comercial de "' + productName + '":', 'Fórmula artesanal de fábrica La Victoria.');
-      if (newDesc !== null) {
-        alert('Descripción de "' + productName + '" actualizada correctamente en el catálogo.');
+    function openEditProductModal(id, name, cat, desc, charac, pres, unit, price, stock, minStock, barcode, photoUrl) {
+      document.getElementById('editProdId').value = id;
+      document.getElementById('editProdName').value = name;
+      document.getElementById('editProdCategory').value = cat || 'Salsas Tradicionales';
+      document.getElementById('editProdDesc').value = desc;
+      document.getElementById('editProdCharac').value = charac;
+      document.getElementById('editProdPres').value = pres;
+      document.getElementById('editProdPrice').value = price;
+      document.getElementById('editProdStock').value = stock;
+      document.getElementById('editProdMinStock').value = minStock || 10;
+      document.getElementById('editProdBarcode').value = barcode;
+      document.getElementById('editProdPhoto').value = photoUrl || '';
+
+      document.getElementById('editProdPreviewTitle').innerText = name;
+      document.getElementById('editProdPreviewImg').src = photoUrl || 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80';
+
+      document.getElementById('modalEditProduct').classList.remove('hidden');
+    }
+
+    function closeEditProductModal() {
+      document.getElementById('modalEditProduct').classList.add('hidden');
+    }
+
+    function saveEditProduct() {
+      const id = document.getElementById('editProdId').value;
+      const name = document.getElementById('editProdName').value.trim();
+      const cat = document.getElementById('editProdCategory').value;
+      const desc = document.getElementById('editProdDesc').value.trim();
+      const charac = document.getElementById('editProdCharac').value.trim();
+      const pres = document.getElementById('editProdPres').value.trim();
+      const price = document.getElementById('editProdPrice').value;
+      const stock = document.getElementById('editProdStock').value;
+      const barcode = document.getElementById('editProdBarcode').value.trim();
+      const photo = document.getElementById('editProdPhoto').value.trim() || 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80';
+
+      if (!name || !price) {
+        alert('El nombre y el precio son obligatorios.');
+        return;
       }
+
+      // Update Card DOM Elements
+      const imgElem = document.getElementById('img-' + id);
+      if (imgElem) imgElem.src = photo;
+
+      const nameElem = document.getElementById('name-' + id);
+      if (nameElem) nameElem.innerText = name;
+
+      const descElem = document.getElementById('desc-' + id);
+      if (descElem) descElem.innerText = desc;
+
+      const presElem = document.getElementById('pres-' + id);
+      if (presElem) presElem.innerText = pres;
+
+      const characElem = document.getElementById('charac-' + id);
+      if (characElem) characElem.innerText = charac;
+
+      const stockElem = document.getElementById('stock-' + id);
+      if (stockElem) stockElem.innerText = stock + ' Unidades';
+
+      const priceElem = document.getElementById('price-' + id);
+      if (priceElem) priceElem.innerText = '$' + Number(price).toLocaleString('es-CO') + ' COP';
+
+      closeEditProductModal();
+      alert('¡Producto "' + name + '" actualizado correctamente con todos sus parámetros técnicos, fotos e inventario!');
     }
 
     function openCreateRouteModal() {

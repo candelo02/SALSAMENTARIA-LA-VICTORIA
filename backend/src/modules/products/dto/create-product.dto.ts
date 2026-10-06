@@ -42,6 +42,11 @@ export class CreateProductDto {
   @IsOptional()
   minStock?: number;
 
+  @ApiProperty({ example: 'https://images.unsplash.com/photo-1472476443507-c7a5948772fc?auto=format&fit=crop&w=600&q=80', required: false, description: 'URL de la fotografía del producto' })
+  @IsString()
+  @IsOptional()
+  photoUrl?: string;
+
   @ApiProperty({ example: '7701234567891', required: false, description: 'Código de barras EAN-13 o QR' })
   @IsString()
   @IsOptional()

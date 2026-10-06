@@ -12,36 +12,51 @@ export class UpdateProductDto {
   @IsOptional()
   description?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ example: 'Características físicas y gastronómicas', required: false })
   @IsString()
   @IsOptional()
   characteristics?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ example: 'Frasco PET 500 ml', required: false })
   @IsString()
   @IsOptional()
   presentation?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ example: 'Unidad', required: false })
+  @IsString()
+  @IsOptional()
+  unitOfMeasure?: string;
+
+  @ApiProperty({ example: 12500.00, required: false })
   @IsNumber()
   @Min(0)
   @IsOptional()
   price?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ example: 150, required: false })
   @IsNumber()
   @Min(0)
   @IsOptional()
   stock?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ example: 20, required: false })
   @IsNumber()
   @Min(0)
   @IsOptional()
   minStock?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ example: '7701234567899', required: false })
   @IsString()
   @IsOptional()
   barcode?: string;
+
+  @ApiProperty({ example: 'https://images.unsplash.com/photo-1472476443507-c7a5948772fc?auto=format&fit=crop&w=600&q=80', required: false })
+  @IsString()
+  @IsOptional()
+  photoUrl?: string;
+
+  @ApiProperty({ example: 'cat-uuid-1234', required: false })
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 }
