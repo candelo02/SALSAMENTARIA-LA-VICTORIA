@@ -16,6 +16,12 @@ export class NotificationsController {
     return this.notificationsService.getUserNotifications(req.user.id, req.user.role);
   }
 
+  @Patch('read-all')
+  @ApiOperation({ summary: 'Marcar todas las notificaciones del usuario/rol como leídas' })
+  async markAllAsRead(@Request() req: any) {
+    return this.notificationsService.markAllAsRead(req.user.id, req.user.role);
+  }
+
   @Patch(':id/read')
   @ApiOperation({ summary: 'Marcar una notificación como leída' })
   async markAsRead(@Param('id') id: string) {

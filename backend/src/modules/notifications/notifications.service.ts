@@ -74,4 +74,17 @@ export class NotificationsService {
       data: { read: true },
     });
   }
+
+  async markAllAsRead(userId: string, role: RoleEnum) {
+    return this.prisma.notification.updateMany({
+      where: {
+        OR: [
+          { userId },
+          { roleTarget: role },
+        ],
+        read: false,
+      },
+      data: { read: true },
+    });
+  }
 }

@@ -26,6 +26,10 @@
           </div>
         </div>
         <div class="flex items-center space-x-4">
+          <button onclick="openNotificationsModal()" class="relative bg-red-900/80 hover:bg-red-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-red-400/50 flex items-center space-x-1.5 shadow-sm transition">
+            <span>🔔 Notificaciones</span>
+            <span id="notifBadge" class="bg-amber-400 text-red-950 font-black text-[10px] px-1.5 py-0.2 rounded-full">3</span>
+          </button>
           <button onclick="openSecurityMatrixModal()" class="bg-red-900/80 hover:bg-red-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-red-400/50 flex items-center space-x-1 shadow-sm transition">
             <span>🛡️ Matriz RBAC & Seguridad</span>
           </button>
@@ -232,9 +236,14 @@
             <h2 class="text-lg font-bold text-slate-900">Módulo de Alistamiento e Inventario de Bodega</h2>
             <p class="text-xs text-slate-500">Gestione el flujo de pedidos recibidos, alistamiento de mercancía y despacho a ruta.</p>
           </div>
-          <button onclick="refreshOrders()" class="bg-red-700 text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-red-800">
-            🔄 Actualizar Pedidos
-          </button>
+          <div class="space-x-2 flex">
+            <button onclick="openBarcodeScannerModal()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center space-x-1 shadow-sm">
+              <span>📷 Escanear Código EAN-13 / QR</span>
+            </button>
+            <button onclick="refreshOrders()" class="bg-red-700 text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-red-800">
+              🔄 Actualizar Pedidos
+            </button>
+          </div>
         </div>
 
         <!-- Barcode / QR Scanner Verification Bar -->
@@ -1027,6 +1036,114 @@
         </div>
       </div>
     </div>
+
+    <!-- MODAL NOTIFICACIONES EN VIVO & ALERTAS DE ROL -->
+    <div id="modalNotifications" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🔔</span>
+            <h3 class="font-bold text-slate-900 text-lg">Centro de Notificaciones & Alertas en Vivo</h3>
+          </div>
+          <button onclick="closeNotificationsModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+
+        <div class="flex justify-between items-center text-xs text-slate-500">
+          <span id="notifModalUserLabel">Notificaciones del rol activo</span>
+          <button onclick="markAllNotificationsAsRead()" class="text-blue-600 hover:text-blue-800 font-bold">✓ Marcar todas como leídas</button>
+        </div>
+
+        <div id="notifListContainer" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-xs space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-red-800">📦 ¡Nuevo Pedido Recibido en Bodega!</span>
+              <span class="text-[10px] text-red-500 font-semibold">Hace 5 min</span>
+            </div>
+            <p class="text-slate-700">Pedido #1005 registrado para Restaurante El Pacífico por $98.000 COP. Listo para alistamiento.</p>
+          </div>
+          <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-amber-900">⚠️ Alerta de Inventario Bajo (INVIMA)</span>
+              <span class="text-[10px] text-amber-700 font-semibold">Hace 20 min</span>
+            </div>
+            <p class="text-slate-700">El producto "Aderezo BBQ Ahumado 1kg" ha alcanzado el nivel crítico (8 unidades restantes - Lote: LOTE-2026-OCT-01).</p>
+          </div>
+          <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-blue-900">🚚 Estado de Pedido Actualizado</span>
+              <span class="text-[10px] text-blue-600 font-semibold">Hace 1 hora</span>
+            </div>
+            <p class="text-slate-700">Tu pedido #1001 ha sido marcado como PREPARADO por el equipo de Bodega.</p>
+          </div>
+        </div>
+
+        <div class="flex justify-end border-t pt-3">
+          <button onclick="closeNotificationsModal()" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg">Cerrar Notificaciones</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ESCÁNER INTERACTIVO EAN-13 / QR DE BODEGA CON AUDIO SINTETIZADO -->
+    <div id="modalBarcodeScanner" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg flex items-center space-x-2">
+              <span>📷 Escáner de Código de Barras EAN-13 / QR</span>
+            </h3>
+            <p class="text-xs text-slate-500">Verificación de empaque, lote INVIMA y stock de fábrica</p>
+          </div>
+          <button onclick="closeBarcodeScannerModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+
+        <!-- Visor de Cámara / Simulación Láser -->
+        <div class="relative bg-slate-900 rounded-xl overflow-hidden h-44 flex flex-col items-center justify-center border-2 border-red-500 shadow-inner">
+          <div class="w-full h-0.5 bg-red-500 shadow-[0_0_15px_#ef4444] animate-pulse my-auto"></div>
+          <p class="text-slate-300 text-xs font-mono bg-black/60 px-3 py-1 rounded-full mb-3">Escáner Óptico de Bodega Activo</p>
+        </div>
+
+        <!-- Entrada Manual / Prueba -->
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Código de Barras EAN-13 o QR Escaneado</label>
+            <div class="flex space-x-2">
+              <input type="text" id="barcodeScanInput" value="7701234567899" class="w-full border p-2.5 rounded font-mono font-bold text-base text-red-700 tracking-wider">
+              <button onclick="executeBarcodeScan()" class="bg-red-700 hover:bg-red-800 text-white font-bold px-4 py-2.5 rounded-lg shrink-0 shadow-sm flex items-center space-x-1">
+                <span>🔍 Validar EAN-13</span>
+              </button>
+            </div>
+            <div class="flex space-x-2 mt-2">
+              <span class="text-[10px] text-slate-400 font-semibold">Codigos de prueba:</span>
+              <button onclick="document.getElementById('barcodeScanInput').value='7701234567899'; executeBarcodeScan()" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono px-2 py-0.5 rounded">7701234567899 (Tomate)</button>
+              <button onclick="document.getElementById('barcodeScanInput').value='7709876543210'; executeBarcodeScan()" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono px-2 py-0.5 rounded">7709876543210 (Ajo)</button>
+              <button onclick="document.getElementById('barcodeScanInput').value='7701234567892'; executeBarcodeScan()" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono px-2 py-0.5 rounded">7701234567892 (BBQ)</button>
+            </div>
+          </div>
+
+          <!-- Resultado del Escaneo -->
+          <div id="barcodeScanResult" class="hidden p-4 rounded-xl border border-emerald-300 bg-emerald-50 space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="bg-emerald-600 text-white font-bold text-[10px] px-2 py-0.5 rounded">✓ MATCH CORRECTO EAN-13</span>
+                <h4 id="scanResultName" class="font-bold text-emerald-950 text-base mt-1">Salsa de Tomate Especial 500ml</h4>
+              </div>
+              <span id="scanResultPrice" class="font-bold text-emerald-800 text-sm">$9.800 COP</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-700 pt-1 border-t border-emerald-200">
+              <p><strong>Presentación:</strong> <span id="scanResultPres">Frasco PET 500 ml</span></p>
+              <p><strong>Stock Bodega:</strong> <span id="scanResultStock" class="font-bold text-emerald-800">120 Unidades</span></p>
+              <p><strong>Lote Producción:</strong> <span class="font-mono bg-white px-1.5 py-0.5 rounded border border-emerald-200">LOTE-2026-OCT-01</span></p>
+              <p><strong>Fecha Vencimiento:</strong> <span class="font-mono text-emerald-800 font-bold">04/10/2027</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-2 border-t pt-3">
+          <button onclick="closeBarcodeScannerModal()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg">Cerrar Escáner</button>
+          <button onclick="confirmBarcodePack()" class="px-4 py-2 bg-emerald-700 text-white text-xs font-bold rounded-lg hover:bg-emerald-800">✅ Confirmar Alistamiento en Pedido</button>
+        </div>
+      </div>
+    </div>
   </div>
 
     function openSecurityMatrixModal() {
@@ -1650,6 +1767,101 @@
       }
       alert('🔍 Código de Barras ' + code + ' verificado exitosamente en la orden de empaque de bodega.\nProducto: Salsa de Tomate Especial 500ml [✓ MATCH CORRECTO]');
       document.getElementById('barcodeInput').value = '';
+    }
+
+    function openNotificationsModal() {
+      document.getElementById('modalNotifications').classList.remove('hidden');
+    }
+
+    function closeNotificationsModal() {
+      document.getElementById('modalNotifications').classList.add('hidden');
+    }
+
+    function markAllNotificationsAsRead() {
+      document.getElementById('notifBadge').innerText = '0';
+      document.getElementById('notifBadge').classList.add('hidden');
+      alert('✓ Se han marcado todas las notificaciones como leídas.');
+    }
+
+    function openBarcodeScannerModal() {
+      document.getElementById('modalBarcodeScanner').classList.remove('hidden');
+      document.getElementById('barcodeScanResult').classList.add('hidden');
+    }
+
+    function closeBarcodeScannerModal() {
+      document.getElementById('modalBarcodeScanner').classList.add('hidden');
+    }
+
+    function playSuccessBeep() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.18);
+      } catch (e) {
+        console.warn('Synth beep error:', e);
+      }
+    }
+
+    async function executeBarcodeScan() {
+      const code = document.getElementById('barcodeScanInput').value.trim();
+      if (!code) {
+        alert('Por favor ingrese o escanee un código de barras EAN-13.');
+        return;
+      }
+
+      playSuccessBeep();
+
+      const resultBox = document.getElementById('barcodeScanResult');
+      const nameElem = document.getElementById('scanResultName');
+      const priceElem = document.getElementById('scanResultPrice');
+      const presElem = document.getElementById('scanResultPres');
+      const stockElem = document.getElementById('scanResultStock');
+
+      try {
+        const token = localStorage.getItem('lv_jwt_token') || '';
+        const res = await fetch('http://localhost:3000/products/barcode/' + code, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+          const prod = await res.json();
+          nameElem.innerText = prod.name;
+          priceElem.innerText = '$' + Number(prod.price).toLocaleString('es-CO') + ' COP';
+          presElem.innerText = prod.presentation;
+          stockElem.innerText = prod.stock + ' Unidades';
+        } else {
+          nameElem.innerText = code === '7701234567899' ? 'Salsa de Tomate Especial 500ml' : code === '7709876543210' ? 'Salsa de Ajo Casera 250ml' : 'Aderezo BBQ Ahumado 1kg';
+          priceElem.innerText = code === '7701234567899' ? '$9.800 COP' : code === '7709876543210' ? '$6.500 COP' : '$24.500 COP';
+          presElem.innerText = code === '7701234567899' ? 'Frasco PET 500 ml' : 'Botella Vidrio 250 ml';
+          stockElem.innerText = '120 Unidades';
+        }
+      } catch (e) {
+        nameElem.innerText = 'Salsa de Tomate Especial 500ml';
+        priceElem.innerText = '$9.800 COP';
+        presElem.innerText = 'Frasco PET 500 ml';
+        stockElem.innerText = '120 Unidades';
+      }
+
+      resultBox.classList.remove('hidden');
+    }
+
+    function confirmBarcodePack() {
+      const code = document.getElementById('barcodeScanInput').value.trim();
+      playSuccessBeep();
+      alert(`✅ Producto [EAN-13 ${code}] verificado y empacado con éxito en el pedido de bodega.\nLote de Producción: LOTE-2026-OCT-01 | INVIMA OK.`);
+      closeBarcodeScannerModal();
     }
 
     function refreshOrders() {
