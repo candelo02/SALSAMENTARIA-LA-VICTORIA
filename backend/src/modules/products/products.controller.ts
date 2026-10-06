@@ -22,6 +22,12 @@ export class ProductsController {
     return this.productsService.getCategories();
   }
 
+  @Get('barcode/:code')
+  @ApiOperation({ summary: 'Buscar producto por código de barras o QR para bodega' })
+  async findByBarcode(@Param('code') code: string) {
+    return this.productsService.findByBarcode(code);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Obtener detalle de un producto por ID' })
   async findOne(@Param('id') id: string) {

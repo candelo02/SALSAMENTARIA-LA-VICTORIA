@@ -108,6 +108,7 @@ model Product {
   minStock      Int               @default(10)
   status        ProductStatusEnum @default(DISPONIBLE)
   photoUrl      String?
+  barcode       String?           @unique
   isActive      Boolean           @default(true)
   categoryId    String
   createdAt     DateTime          @default(now())

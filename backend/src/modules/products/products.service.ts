@@ -30,6 +30,19 @@ export class ProductsService {
     return product;
   }
 
+  async findByBarcode(barcode: string) {
+    const product = await this.prisma.product.findFirst({
+      where: { barcode, isActive: true },
+      include: { category: true },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Producto con código de barras ${barcode} no encontrado.`);
+    }
+
+    return product;
+  }
+
   async getCategories() {
     return this.prisma.category.findMany({
       where: { isActive: true },
