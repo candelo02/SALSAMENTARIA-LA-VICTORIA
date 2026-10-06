@@ -6,6 +6,8 @@
   <title>La Victoria - Dashboard Administrativo & Bodega</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
@@ -48,7 +50,7 @@
           🏭 Control de Inventarios
         </button>
         <button onclick="switchTab('rutas')" id="tab-rutas" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700">
-          🚚 Rutas & Disponibilidad
+          🚚 Rutas & Trazabilidad GPS
         </button>
       </div>
     </div>
@@ -254,26 +256,39 @@
         </div>
       </section>
 
-      <!-- SECTION 4: RUTAS -->
+      <!-- SECTION 4: RUTAS & TRAZABILIDAD GPS -->
       <section id="sec-rutas" class="hidden space-y-4">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
-          <h3 class="font-bold text-slate-800">Planificación de Rutas de Entrega del Día</h3>
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-slate-900 text-lg">Trazabilidad GPS & Monitoreo de Rutas en Tiempo Real</h3>
+              <p class="text-xs text-slate-500">Visualización de coordenadas de clientes, paradas de entrega y trazado de ruta comercial.</p>
+            </div>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+              ● Monitoreo GPS En Vivo
+            </span>
+          </div>
+
+          <!-- Interactive Leaflet Map -->
+          <div id="routeMap" class="h-96 w-full rounded-xl border border-slate-300 shadow-inner z-0"></div>
+
+          <!-- Route Info & Assigned Stops -->
           <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
             <div class="flex justify-between items-center">
               <div>
-                <span class="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded">RUTA #001 - TUMACO CENTRO</span>
+                <span class="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded">RUTA #001 - TUMACO CENTRO & INDUSTRIAL</span>
                 <h4 class="font-bold text-slate-900 mt-1">Vendedor / Conductor: Carlos Vendedor</h4>
               </div>
               <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">EN PROGRESO</span>
             </div>
-            <p class="text-xs text-slate-600">Vehículo: Furgón NHR #2 | Clientes programados: 4 clientes</p>
+            <p class="text-xs text-slate-600">Vehículo: Furgón NHR #2 | Coordenadas Origen: 1.800 N, -78.760 W (Planta La Victoria)</p>
             <div class="bg-white p-3 rounded border text-xs space-y-2">
               <div class="flex justify-between border-b pb-1">
-                <span>1. Restaurante El Sabor del Valle (Calle 15 # 4-22)</span>
+                <span>📍 Parada 1: Restaurante El Sabor del Valle (Lat: 1.801, Lng: -78.761)</span>
                 <span class="font-bold text-amber-600">Pedido #1001 (Alister en Bodega)</span>
               </div>
               <div class="flex justify-between">
-                <span>2. Distribuidora La Economía (Carrera 8 # 12-50)</span>
+                <span>📍 Parada 2: Distribuidora La Economía (Lat: 1.805, Lng: -78.765)</span>
                 <span class="font-bold text-blue-600">Pedido #1002 (En Alistamiento)</span>
               </div>
             </div>
@@ -284,6 +299,9 @@
   </div>
 
   <script>
+    let mapInitialized = false;
+    let leafletMap = null;
+
     function switchTab(tab) {
       ['dashboard', 'bodega', 'inventario', 'rutas'].forEach(t => {
         const sec = document.getElementById('sec-' + t);
@@ -298,6 +316,42 @@
           btn.classList.add('border-transparent', 'text-slate-500');
         }
       });
+
+      if (tab === 'rutas' && !mapInitialized) {
+        initLeafletMap();
+      }
+    }
+
+    function initLeafletMap() {
+      mapInitialized = true;
+      setTimeout(() => {
+        leafletMap = L.map('routeMap').setView([1.802, -78.763], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '© OpenStreetMap - La Victoria Logística'
+        }).addTo(leafletMap);
+
+        // Factory / Origin Marker
+        const factoryMarker = L.marker([1.800, -78.760]).addTo(leafletMap);
+        factoryMarker.bindPopup('<b>🏭 Planta Salsas La Victoria</b><br>Origen de Distribución & Bodega Central').openPopup();
+
+        // Customer 1 Marker
+        const c1Marker = L.marker([1.801, -78.761]).addTo(leafletMap);
+        c1Marker.bindPopup('<b>🏬 Restaurante El Sabor del Valle</b><br>Pedido #1001 ($116.000 COP)<br>Estado: En Alistamiento');
+
+        // Customer 2 Marker
+        const c2Marker = L.marker([1.805, -78.765]).addTo(leafletMap);
+        c2Marker.bindPopup('<b>🏬 Distribuidora La Economía</b><br>Pedido #1002 ($49.000 COP)<br>Estado: Preparado');
+
+        // Draw Route Line
+        const routePoints = [
+          [1.800, -78.760],
+          [1.801, -78.761],
+          [1.805, -78.765]
+        ];
+        L.polyline(routePoints, { color: '#c62828', weight: 4, opacity: 0.8, dashArray: '8, 8' }).addTo(leafletMap);
+      }, 200);
     }
 
     // Chart.js Setup
