@@ -29,9 +29,18 @@
           <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500 text-white">
             ● Backend Conectado (Port 3000)
           </span>
-          <div class="text-right text-sm">
-            <p class="font-semibold" id="userName">Mario Bodega / Carlos Admin</p>
-            <p class="text-xs text-red-200" id="userRole">Rol: Bodega & Administración</p>
+          <div class="text-right text-xs">
+            <select id="userSelector" onchange="changeActiveUser(this.value)" class="bg-red-800 text-white text-xs px-2 py-1 rounded border border-red-500 focus:outline-none">
+              <option value="admin">👨‍💼 Carlos Administrador (ADMINISTRADOR)</option>
+              <option value="vendedor1">🛒 Carlos Vendedor (VENDEDOR)</option>
+              <option value="vendedor2">🛒 Ana Vendedora Campo (VENDEDOR)</option>
+              <option value="bodega" selected>📦 Mario Encargado Bodega (BODEGA)</option>
+              <option value="contabilidad">📊 Laura Auxiliar Contable (AUXILIAR_CONTABLE)</option>
+              <option value="ventas">💼 Roberto Jefe de Ventas (ENCARGADO_VENTAS)</option>
+              <option value="produccion">🏭 Ing. Fernando Producción (ENCARGADO_PRODUCCION)</option>
+              <option value="supervisor">🔍 Patricia Supervisora (SUPERVISOR)</option>
+            </select>
+            <p class="text-[10px] text-red-200 mt-0.5" id="activeRoleText">Rol Activo: BODEGA</p>
           </div>
         </div>
       </div>
@@ -441,6 +450,21 @@
       }
       alert('🔍 Código de Barras ' + code + ' verificado exitosamente en la orden de empaque de bodega.\nProducto: Salsa de Tomate Especial 500ml [✓ MATCH CORRECTO]');
       document.getElementById('barcodeInput').value = '';
+    }
+
+    function changeActiveUser(val) {
+      const rolesMap = {
+        'admin': 'ADMINISTRADOR (Acceso Total & Control)',
+        'vendedor1': 'VENDEDOR (Carlos - Campo Tumaco)',
+        'vendedor2': 'VENDEDOR (Ana - Campo Nariño)',
+        'bodega': 'BODEGA (Mario - Alistamiento & Empaque)',
+        'contabilidad': 'AUXILIAR_CONTABLE (Laura - Reportes & Facturación)',
+        'ventas': 'ENCARGADO_VENTAS (Roberto - Monitoreo Comercial)',
+        'produccion': 'ENCARGADO_PRODUCCION (Ing. Fernando - Lotes de Salsas)',
+        'supervisor': 'SUPERVISOR (Patricia - Trazabilidad & Rutas)'
+      };
+      document.getElementById('activeRoleText').innerText = 'Rol Activo: ' + (rolesMap[val] || val);
+      alert('Sesión cambiada a usuario: ' + val + '\n' + rolesMap[val]);
     }
 
     function refreshOrders() {

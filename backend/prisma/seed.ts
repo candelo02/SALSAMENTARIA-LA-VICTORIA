@@ -4,46 +4,71 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding La Victoria database...');
+  console.log('Seeding La Victoria database with all department users...');
 
   // 1. Password Hash
   const passwordHash = await bcrypt.hash('Victoria2026!', 10);
 
-  // 2. Create Users
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@lavictoria.com' },
-    update: {},
-    create: {
+  // 2. Create All Required Department Users
+  const users = [
+    {
       email: 'admin@lavictoria.com',
-      fullName: 'Administrador Principal',
-      password: passwordHash,
+      fullName: 'Carlos Administrador',
       role: RoleEnum.ADMINISTRADOR,
     },
-  });
-
-  const vendor = await prisma.user.upsert({
-    where: { email: 'vendedor1@lavictoria.com' },
-    update: {},
-    create: {
+    {
       email: 'vendedor1@lavictoria.com',
       fullName: 'Carlos Vendedor',
-      password: passwordHash,
       role: RoleEnum.VENDEDOR,
     },
-  });
-
-  const bodega = await prisma.user.upsert({
-    where: { email: 'bodega1@lavictoria.com' },
-    update: {},
-    create: {
+    {
+      email: 'vendedor2@lavictoria.com',
+      fullName: 'Ana Vendedora Campo',
+      role: RoleEnum.VENDEDOR,
+    },
+    {
+      email: 'contabilidad@lavictoria.com',
+      fullName: 'Laura Auxiliar Contable',
+      role: RoleEnum.AUXILIAR_CONTABLE,
+    },
+    {
       email: 'bodega1@lavictoria.com',
-      fullName: 'Mario Bodega',
-      password: passwordHash,
+      fullName: 'Mario Encargado Bodega',
       role: RoleEnum.BODEGA,
     },
-  });
+    {
+      email: 'ventas@lavictoria.com',
+      fullName: 'Roberto Jefe de Ventas',
+      role: RoleEnum.ENCARGADO_VENTAS,
+    },
+    {
+      email: 'produccion@lavictoria.com',
+      fullName: 'Ing. Fernando Producción Salsas',
+      role: RoleEnum.ENCARGADO_PRODUCCION,
+    },
+    {
+      email: 'supervisor@lavictoria.com',
+      fullName: 'Patricia Supervisora Operaciones',
+      role: RoleEnum.SUPERVISOR,
+    },
+  ];
 
-  console.log('Users created:', { admin: admin.email, vendor: vendor.email, bodega: bodega.email });
+  const createdUsers = [];
+  for (const u of users) {
+    const user = await prisma.user.upsert({
+      where: { email: u.email },
+      update: { role: u.role, fullName: u.fullName },
+      create: {
+        email: u.email,
+        fullName: u.fullName,
+        password: passwordHash,
+        role: u.role,
+      },
+    });
+    createdUsers.push(user.email);
+  }
+
+  console.log('Department Users created:', createdUsers);
 
   // 3. Create Categories
   const catSalsas = await prisma.category.upsert({
@@ -64,55 +89,7 @@ async function main() {
     },
   });
 
-  // 4. Create Products
-  const prod1 = await prisma.product.create({
-    data: {
-      name: 'Salsa de Tomate Especial 500ml',
-      description: 'Salsa elaborada con tomates seleccionados, consistencia espesa ideal para comidas rápidas.',
-      characteristics: 'Producto nacional, sin conservantes artificiales excesivos, presentación 500ml.',
-      presentation: 'Frasco PET 500 ml',
-      unitOfMeasure: 'Unidad',
-      price: 8500.00,
-      stock: 120,
-      minStock: 15,
-      status: ProductStatusEnum.DISPONIBLE,
-      categoryId: catSalsas.id,
-    },
-  });
-
-  const prod2 = await prisma.product.create({
-    data: {
-      name: 'Salsa de Ajo Casera 250ml',
-      description: 'Salsa sabor intenso a ajo natural con toques de finas hierbas.',
-      characteristics: 'Ideal para carnes, patacones y aperitivos.',
-      presentation: 'Botella PET 250 ml',
-      unitOfMeasure: 'Unidad',
-      price: 6200.00,
-      stock: 45,
-      minStock: 10,
-      status: ProductStatusEnum.DISPONIBLE,
-      categoryId: catSalsas.id,
-    },
-  });
-
-  const prod3 = await prisma.product.create({
-    data: {
-      name: 'Aderezo BBQ Ahumado 1kg',
-      description: 'Salsa BBQ estilo americano con sabor ahumado profundo y nota dulce refinada.',
-      characteristics: 'Uso industrial y restaurantes.',
-      presentation: 'Galón PET 1000 gr',
-      unitOfMeasure: 'Galón',
-      price: 24500.00,
-      stock: 8,
-      minStock: 10,
-      status: ProductStatusEnum.STOCK_BAJO,
-      categoryId: catAderezos.id,
-    },
-  });
-
-  console.log('Products created:', [prod1.name, prod2.name, prod3.name]);
-
-  // 5. Create Customers
+  // 4. Create Customers
   const customer1 = await prisma.customer.upsert({
     where: { nitDocument: '900123456-1' },
     update: {},
@@ -149,7 +126,6 @@ async function main() {
   });
 
   console.log('Customers created:', [customer1.name, customer2.name]);
-
   console.log('Seeding completed successfully!');
 }
 
