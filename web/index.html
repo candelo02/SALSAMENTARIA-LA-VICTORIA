@@ -132,9 +132,14 @@
                 </div>
                 <div class="pt-2 flex justify-between items-center">
                   <span class="font-bold text-red-700 text-sm">$116.000 COP</span>
-                  <button onclick="moveStatus('1001', 'EN_PREPARACION')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-1.5 rounded">
-                    Aceptar & Preparar →
-                  </button>
+                  <div class="space-x-1">
+                    <button onclick="downloadPdf('1001')" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-2 py-1.5 rounded" title="Descargar Remisión PDF">
+                      📄 PDF
+                    </button>
+                    <button onclick="moveStatus('1001', 'EN_PREPARACION')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-1.5 rounded">
+                      Aceptar & Preparar →
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -325,6 +330,11 @@
 
     function moveStatus(id, newStatus) {
       alert('Pedido #' + id + ' actualizado a estado: ' + newStatus + ' en la base de datos PostgreSQL.');
+    }
+
+    function downloadPdf(id) {
+      alert('Descargando Remisión PDF del Pedido #' + id + ' desde http://localhost:3000/orders/' + id + '/pdf...');
+      window.open('http://localhost:3000/orders/' + id + '/pdf', '_blank');
     }
 
     function refreshOrders() {

@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Request, Res, StreamableFile } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { Response } from 'express';
 import { OrdersService } from './orders.service';
+import { PdfGeneratorService } from './pdf-generator.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -13,7 +15,10 @@ import { RoleEnum, OrderStatusEnum } from '@prisma/client';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('orders')
 export class OrdersController {
-  constructor(private ordersService: OrdersService) {}
+  constructor(
+    private ordersService: OrdersService,
+    private pdfGeneratorService: PdfGeneratorService,
+  ) {}
 
   @Post()
   @Roles(RoleEnum.ADMINISTRADOR, RoleEnum.VENDEDOR)
@@ -31,7 +36,6 @@ export class OrdersController {
     @Query('vendorId') vendorId?: String,
     @Request() req?: any,
   ) {
-    // If user is Vendedor, restrict list to their own orders unless requested by Admin/Bodega
     const activeVendorId = req.user.role === RoleEnum.VENDEDOR ? req.user.id : (vendorId as string);
     return this.ordersService.findAll(status, activeVendorId);
   }
@@ -40,6 +44,20 @@ export class OrdersController {
   @ApiOperation({ summary: 'Consultar detalle completo de un pedido con historial' })
   async findOne(@Param('id') id: string) {
     return this.ordersService.findOne(id);
+  }
+
+  @Get(':id/pdf')
+  @ApiOperation({ summary: 'Generar y descargar remisión / comprobante en formato PDF' })
+  async downloadPdf(@Param('id') id: string, @Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
+    const order = await this.ordersService.findOne(id);
+    const pdfBuffer = await this.pdfGeneratorService.generateOrderPdf(order);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="remision_pedido_${id.substring(0, 8)}.pdf"`,
+    });
+
+    return new StreamableFile(pdfBuffer);
   }
 
   @Patch(':id/status')
