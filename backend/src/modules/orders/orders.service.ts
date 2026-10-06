@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { OrderStatusEnum, ProductStatusEnum, Prisma } from '@prisma/client';
+import { OrderStatusEnum, ProductStatusEnum, RoleEnum, Prisma } from '@prisma/client';
+import { PermissionEnum } from '../auth/permissions/permissions.enum';
+import { hasPermission } from '../auth/permissions/permission-matrix';
 
 @Injectable()
 export class OrdersService {
@@ -150,10 +152,21 @@ export class OrdersService {
     return createdOrder;
   }
 
-  async findAll(status?: OrderStatusEnum, vendorId?: string) {
+  async findAll(status?: OrderStatusEnum, vendorIdFilter?: string, requestingUser?: { id: string; role: RoleEnum }) {
     const where: Prisma.OrderWhereInput = {};
     if (status) where.status = status;
-    if (vendorId) where.vendorId = vendorId;
+
+    if (requestingUser) {
+      const canReadAll = hasPermission(requestingUser.role, PermissionEnum.ORDER_READ_ALL);
+      if (!canReadAll) {
+        // Enforce strict resource ownership for vendors
+        where.vendorId = requestingUser.id;
+      } else if (vendorIdFilter) {
+        where.vendorId = vendorIdFilter;
+      }
+    } else if (vendorIdFilter) {
+      where.vendorId = vendorIdFilter;
+    }
 
     return this.prisma.order.findMany({
       where,
@@ -166,7 +179,7 @@ export class OrdersService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, requestingUser?: { id: string; role: RoleEnum }) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: {
@@ -184,10 +197,17 @@ export class OrdersService {
       throw new NotFoundException(`Pedido con ID ${id} no encontrado.`);
     }
 
+    if (requestingUser) {
+      const canReadAll = hasPermission(requestingUser.role, PermissionEnum.ORDER_READ_ALL);
+      if (!canReadAll && order.vendorId !== requestingUser.id) {
+        throw new ForbiddenException('Acceso denegado (IDOR): No tiene permisos para consultar un pedido que no le pertenece.');
+      }
+    }
+
     return order;
   }
 
-  async updateStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto, userId: string) {
+  async updateStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto, requestingUser: { id: string; role: RoleEnum }) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: { items: true },
@@ -195,6 +215,11 @@ export class OrdersService {
 
     if (!order) {
       throw new NotFoundException(`Pedido con ID ${id} no encontrado.`);
+    }
+
+    const canReadAll = hasPermission(requestingUser.role, PermissionEnum.ORDER_READ_ALL);
+    if (!canReadAll && order.vendorId !== requestingUser.id) {
+      throw new ForbiddenException('Acceso denegado (IDOR): No tiene permisos para modificar el estado de un pedido ajeno.');
     }
 
     const previousStatus = order.status;
@@ -233,7 +258,7 @@ export class OrdersService {
           orderId: id,
           previousStatus,
           newStatus,
-          changedById: userId,
+          changedById: requestingUser.id,
           notes: updateOrderStatusDto.notes || `Estado actualizado a ${newStatus}`,
         },
       });

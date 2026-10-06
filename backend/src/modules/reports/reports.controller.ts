@@ -3,19 +3,19 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ReportsService } from './reports.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RoleEnum } from '@prisma/client';
+import { PermissionsGuard } from '../auth/permissions/permissions.guard';
+import { RequirePermissions } from '../auth/permissions/require-permissions.decorator';
+import { PermissionEnum } from '../auth/permissions/permissions.enum';
 
 @ApiTags('Reportes & Exportación Excel')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('reports')
 export class ReportsController {
   constructor(private reportsService: ReportsService) {}
 
   @Get('sales/excel')
-  @Roles(RoleEnum.ADMINISTRADOR, RoleEnum.SUPERVISOR, RoleEnum.BODEGA)
+  @RequirePermissions(PermissionEnum.REPORT_READ_ALL)
   @ApiOperation({ summary: 'Generar y descargar reporte consolidado de ventas en formato Excel (.xlsx)' })
   async downloadSalesReport(@Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
     const excelBuffer = await this.reportsService.generateSalesReportExcel();
@@ -29,7 +29,7 @@ export class ReportsController {
   }
 
   @Get('inventory/excel')
-  @Roles(RoleEnum.ADMINISTRADOR, RoleEnum.BODEGA, RoleEnum.SUPERVISOR)
+  @RequirePermissions(PermissionEnum.REPORT_READ_ALL)
   @ApiOperation({ summary: 'Generar y descargar reporte de inventarios y stock en formato Excel (.xlsx)' })
   async downloadInventoryReport(@Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
     const excelBuffer = await this.reportsService.generateInventoryReportExcel();

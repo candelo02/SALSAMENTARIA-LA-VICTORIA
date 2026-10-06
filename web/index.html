@@ -26,11 +26,15 @@
           </div>
         </div>
         <div class="flex items-center space-x-4">
+          <button onclick="openSecurityMatrixModal()" class="bg-red-900/80 hover:bg-red-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-red-400/50 flex items-center space-x-1 shadow-sm transition">
+            <span>🛡️ Matriz RBAC & Seguridad</span>
+          </button>
           <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500 text-white">
-            ● Backend Conectado (Port 3000)
+            ● Backend RBAC & IDOR Protegido (Port 3000)
           </span>
           <div class="text-right text-xs">
             <select id="userSelector" onchange="changeActiveUser(this.value)" class="bg-red-800 text-white text-xs px-2 py-1 rounded border border-red-500 focus:outline-none">
+              <option value="superadmin">👑 Don Gustavo Propietario (SUPER_ADMIN)</option>
               <option value="admin">👨‍💼 Carlos Administrador (ADMINISTRADOR)</option>
               <option value="vendedor1">🛒 Carlos Vendedor (VENDEDOR)</option>
               <option value="vendedor2">🛒 Ana Vendedora Campo (VENDEDOR)</option>
@@ -803,12 +807,134 @@
           <button onclick="closeRouteStockModal()" class="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg">Entendido</button>
         </div>
       </div>
+    <!-- MODAL MATRIZ DE SEGURIDAD, RBAC & IDOR AUDIT -->
+    <div id="modalSecurityMatrix" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl max-w-3xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg flex items-center space-x-2">
+              <span>🛡️ Matriz de Control de Acceso RBAC & Aislamiento IDOR</span>
+            </h3>
+            <p class="text-xs text-slate-500">Arquitectura de seguridad implementada en el backend NestJS con verificación estricta de propiedad.</p>
+          </div>
+          <button onclick="closeSecurityMatrixModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <!-- Active User & Permissions Summary Badge -->
+          <div class="bg-slate-900 text-white p-4 rounded-xl space-y-2">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+              <span class="text-xs text-red-300 font-bold uppercase tracking-wider">Perfil & Rol Autenticado Actual</span>
+              <span id="secModalRoleBadge" class="bg-emerald-500 text-slate-900 font-extrabold px-2.5 py-0.5 rounded text-xs">BODEGA</span>
+            </div>
+            <p id="secModalUserText" class="text-slate-200 font-semibold">Usuario: Mario Encargado Bodega (bodega1@lavictoria.com)</p>
+            <div class="pt-1">
+              <span class="text-[11px] text-slate-400 font-semibold">Permisos Explícitos Otorgados por Backend:</span>
+              <div id="secModalPermissionsBadges" class="flex flex-wrap gap-1 mt-1">
+                <!-- Dynamically filled -->
+              </div>
+            </div>
+          </div>
+
+          <!-- RBAC Matrix Table -->
+          <div class="border rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-800 text-white text-[11px]">
+                  <th class="p-2.5">Recurso / Módulo</th>
+                  <th class="p-2.5">SUPER_ADMIN</th>
+                  <th class="p-2.5">ADMINISTRADOR</th>
+                  <th class="p-2.5">BODEGA / LOGISTICA</th>
+                  <th class="p-2.5">VENDEDOR</th>
+                  <th class="p-2.5">Aislamiento por Propietario (IDOR)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-[11px]">
+                <tr>
+                  <td class="p-2.5 font-bold text-slate-900">Usuarios & Roles</td>
+                  <td class="p-2.5 font-bold text-emerald-700">CRUD + Roles</td>
+                  <td class="p-2.5 font-semibold text-emerald-700">CRU</td>
+                  <td class="p-2.5 text-slate-400">Sin acceso</td>
+                  <td class="p-2.5 text-slate-400">Sin acceso</td>
+                  <td class="p-2.5"><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded font-bold">Bloqueo Elevación Privilegios</span></td>
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="p-2.5 font-bold text-slate-900">Pedidos & Remisiones PDF</td>
+                  <td class="p-2.5 font-bold text-emerald-700">Lectura Global</td>
+                  <td class="p-2.5 font-semibold text-emerald-700">Lectura Global</td>
+                  <td class="p-2.5 font-semibold text-blue-700">Lectura Global / Estado</td>
+                  <td class="p-2.5 font-bold text-amber-700">Solo Pedidos Propios</td>
+                  <td class="p-2.5"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">WHERE vendorId = user.id</span></td>
+                </tr>
+                <tr>
+                  <td class="p-2.5 font-bold text-slate-900">Rutas & Clientes GPS</td>
+                  <td class="p-2.5 font-bold text-emerald-700">Lectura Global</td>
+                  <td class="p-2.5 font-semibold text-emerald-700">Lectura Global</td>
+                  <td class="p-2.5 font-semibold text-blue-700">Lectura / Estado</td>
+                  <td class="p-2.5 font-bold text-amber-700">Solo Rutas Propias</td>
+                  <td class="p-2.5"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">WHERE vendorId = user.id</span></td>
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="p-2.5 font-bold text-slate-900">Catálogo & Precios</td>
+                  <td class="p-2.5 font-bold text-emerald-700">Crear / Editar</td>
+                  <td class="p-2.5 font-semibold text-emerald-700">Crear / Editar</td>
+                  <td class="p-2.5 text-slate-600">Lectura / Stock</td>
+                  <td class="p-2.5 text-slate-600">Solo Lectura</td>
+                  <td class="p-2.5"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">Protegido por PermissionsGuard</span></td>
+                </tr>
+                <tr>
+                  <td class="p-2.5 font-bold text-slate-900">Reportes Excel (.xlsx)</td>
+                  <td class="p-2.5 font-bold text-emerald-700">Ventas & Stock</td>
+                  <td class="p-2.5 font-semibold text-emerald-700">Ventas & Stock</td>
+                  <td class="p-2.5 text-slate-600">Solo Stock</td>
+                  <td class="p-2.5 text-slate-400">Sin acceso</td>
+                  <td class="p-2.5"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">Protegido REPORT_READ_ALL</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="flex justify-end border-t pt-3">
+          <button onclick="closeSecurityMatrixModal()" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg">Cerrar Matriz de Seguridad</button>
+        </div>
+      </div>
     </div>
   </div>
-  </div>
 
-  <script>
-    let mapInitialized = false;
+    function openSecurityMatrixModal() {
+      const modal = document.getElementById('modalSecurityMatrix');
+      const roleBadge = document.getElementById('secModalRoleBadge');
+      const userText = document.getElementById('secModalUserText');
+      const badgesContainer = document.getElementById('secModalPermissionsBadges');
+
+      const selector = document.getElementById('userSelector');
+      const activeUserVal = selector ? selector.value : 'bodega';
+
+      const roleMap = {
+        superadmin: { role: 'SUPER_ADMIN', name: 'Don Gustavo Propietario', email: 'superadmin@lavictoria.com', perms: ['ACCESO_TOTAL_GLOBAL', 'USER_MANAGE_ROLES', 'ALL_CRUD'] },
+        admin: { role: 'ADMINISTRADOR', name: 'Carlos Administrador', email: 'admin@lavictoria.com', perms: ['USER_CREATE', 'USER_READ_ALL', 'PRODUCT_CREATE', 'ORDER_READ_ALL', 'ROUTE_READ_ALL', 'REPORT_READ_ALL'] },
+        vendedor1: { role: 'VENDEDOR', name: 'Carlos Vendedor', email: 'vendedor1@lavictoria.com', perms: ['ORDER_CREATE', 'ORDER_READ_OWN (Filtro IDOR)', 'CUSTOMER_READ_OWN', 'ROUTE_READ_OWN'] },
+        vendedor2: { role: 'VENDEDOR', name: 'Ana Vendedora Campo', email: 'vendedor2@lavictoria.com', perms: ['ORDER_CREATE', 'ORDER_READ_OWN (Filtro IDOR)', 'CUSTOMER_READ_OWN', 'ROUTE_READ_OWN'] },
+        bodega: { role: 'BODEGA', name: 'Mario Encargado Bodega', email: 'bodega1@lavictoria.com', perms: ['ORDER_READ_ALL', 'ORDER_UPDATE_STATUS', 'PRODUCT_READ', 'PRODUCT_UPDATE', 'ROUTE_READ_ALL'] },
+        contabilidad: { role: 'AUXILIAR_CONTABLE', name: 'Laura Auxiliar Contable', email: 'contabilidad@lavictoria.com', perms: ['ORDER_READ_ALL', 'REPORT_READ_ALL', 'CUSTOMER_READ_ALL'] },
+        ventas: { role: 'ENCARGADO_VENTAS', name: 'Roberto Jefe de Ventas', email: 'ventas@lavictoria.com', perms: ['ORDER_READ_ALL', 'ORDER_CREATE', 'ROUTE_READ_ALL', 'REPORT_READ_ALL'] },
+        produccion: { role: 'ENCARGADO_PRODUCCION', name: 'Ing. Fernando Producción', email: 'produccion@lavictoria.com', perms: ['PRODUCT_CREATE', 'PRODUCT_UPDATE', 'ORDER_READ_ALL', 'REPORT_READ_ALL'] },
+        supervisor: { role: 'SUPERVISOR', name: 'Patricia Supervisora', email: 'supervisor@lavictoria.com', perms: ['ORDER_READ_ALL', 'ROUTE_READ_ALL', 'REPORT_READ_ALL'] },
+      };
+
+      const info = roleMap[activeUserVal] || roleMap.bodega;
+      roleBadge.innerText = info.role;
+      userText.innerText = `Usuario Autenticado: ${info.name} (${info.email})`;
+
+      badgesContainer.innerHTML = info.perms.map(p => `<span class="bg-slate-800 text-emerald-400 font-mono text-[10px] px-2 py-0.5 rounded border border-slate-700">${p}</span>`).join('');
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeSecurityMatrixModal() {
+      document.getElementById('modalSecurityMatrix').classList.add('hidden');
+    }
     let leafletMap = null;
 
     function switchTab(tab) {

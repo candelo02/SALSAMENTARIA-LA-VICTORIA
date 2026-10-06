@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateRouteDto } from './dto/create-route.dto';
-import { RouteStatusEnum, OrderStatusEnum } from '@prisma/client';
+import { RouteStatusEnum, OrderStatusEnum, RoleEnum } from '@prisma/client';
+import { PermissionEnum } from '../auth/permissions/permissions.enum';
+import { hasPermission } from '../auth/permissions/permission-matrix';
 
 @Injectable()
 export class RoutesService {
@@ -42,9 +44,21 @@ export class RoutesService {
     return route;
   }
 
-  async findAll(vendorId?: string) {
+  async findAll(vendorIdFilter?: string, requestingUser?: { id: string; role: RoleEnum }) {
+    const where: any = {};
+    if (requestingUser) {
+      const canReadAll = hasPermission(requestingUser.role, PermissionEnum.ROUTE_READ_ALL);
+      if (!canReadAll) {
+        where.vendorId = requestingUser.id;
+      } else if (vendorIdFilter) {
+        where.vendorId = vendorIdFilter;
+      }
+    } else if (vendorIdFilter) {
+      where.vendorId = vendorIdFilter;
+    }
+
     return this.prisma.route.findMany({
-      where: vendorId ? { vendorId } : {},
+      where,
       include: {
         vendor: { select: { id: true, fullName: true } },
         customers: {
@@ -56,7 +70,7 @@ export class RoutesService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, requestingUser?: { id: string; role: RoleEnum }) {
     const route = await this.prisma.route.findUnique({
       where: { id },
       include: {
@@ -81,11 +95,18 @@ export class RoutesService {
       throw new NotFoundException(`Ruta con ID ${id} no encontrada.`);
     }
 
+    if (requestingUser) {
+      const canReadAll = hasPermission(requestingUser.role, PermissionEnum.ROUTE_READ_ALL);
+      if (!canReadAll && route.vendorId !== requestingUser.id) {
+        throw new ForbiddenException('Acceso denegado (IDOR): No posee permisos para consultar una ruta ajena.');
+      }
+    }
+
     return route;
   }
 
-  async checkRouteStock(routeId: string) {
-    const route = await this.findOne(routeId);
+  async checkRouteStock(routeId: string, requestingUser?: { id: string; role: RoleEnum }) {
+    const route = await this.findOne(routeId, requestingUser);
 
     // Collect all orders in this route
     const orders = route.customers.flatMap((rc) => rc.customer.orders);
@@ -141,7 +162,7 @@ export class RoutesService {
     };
   }
 
-  async updateStatus(id: string, status: RouteStatusEnum) {
+  async updateStatus(id: string, status: RouteStatusEnum, requestingUser?: { id: string; role: RoleEnum }) {
     const route = await this.prisma.route.findUnique({
       where: { id },
       include: {
@@ -157,6 +178,13 @@ export class RoutesService {
 
     if (!route) {
       throw new NotFoundException(`Ruta con ID ${id} no encontrada.`);
+    }
+
+    if (requestingUser) {
+      const canReadAll = hasPermission(requestingUser.role, PermissionEnum.ROUTE_READ_ALL);
+      if (!canReadAll && route.vendorId !== requestingUser.id) {
+        throw new ForbiddenException('Acceso denegado (IDOR): No posee permisos para modificar el estado de una ruta ajena.');
+      }
     }
 
     const updatedRoute = await this.prisma.route.update({

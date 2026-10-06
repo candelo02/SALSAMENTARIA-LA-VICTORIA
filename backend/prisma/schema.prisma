@@ -8,6 +8,7 @@ generator client {
 }
 
 enum RoleEnum {
+  SUPER_ADMIN
   ADMINISTRADOR
   VENDEDOR
   BODEGA

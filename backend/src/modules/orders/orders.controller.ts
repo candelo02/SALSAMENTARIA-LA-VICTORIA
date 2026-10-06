@@ -6,13 +6,14 @@ import { PdfGeneratorService } from './pdf-generator.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RoleEnum, OrderStatusEnum } from '@prisma/client';
+import { PermissionsGuard } from '../auth/permissions/permissions.guard';
+import { RequirePermissions } from '../auth/permissions/require-permissions.decorator';
+import { PermissionEnum } from '../auth/permissions/permissions.enum';
+import { OrderStatusEnum } from '@prisma/client';
 
 @ApiTags('Gestión de Pedidos')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('orders')
 export class OrdersController {
   constructor(
@@ -21,35 +22,34 @@ export class OrdersController {
   ) {}
 
   @Post()
-  @Roles(RoleEnum.ADMINISTRADOR, RoleEnum.VENDEDOR)
+  @RequirePermissions(PermissionEnum.ORDER_CREATE)
   @ApiOperation({ summary: 'Crear un nuevo pedido (Vendedor / Administrador)' })
   async create(@Body() createOrderDto: CreateOrderDto, @Request() req: any) {
     return this.ordersService.create(createOrderDto, req.user.id);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Consultar lista de pedidos con filtros opcionales' })
+  @ApiOperation({ summary: 'Consultar lista de pedidos con aislamiento por rol y propietario' })
   @ApiQuery({ name: 'status', enum: OrderStatusEnum, required: false })
   @ApiQuery({ name: 'vendorId', type: String, required: false })
   async findAll(
     @Query('status') status?: OrderStatusEnum,
-    @Query('vendorId') vendorId?: String,
+    @Query('vendorId') vendorId?: string,
     @Request() req?: any,
   ) {
-    const activeVendorId = req.user.role === RoleEnum.VENDEDOR ? req.user.id : (vendorId as string);
-    return this.ordersService.findAll(status, activeVendorId);
+    return this.ordersService.findAll(status, vendorId, req.user);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Consultar detalle completo de un pedido con historial' })
-  async findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(id);
+  @ApiOperation({ summary: 'Consultar detalle completo de un pedido con verificación de propiedad / IDOR' })
+  async findOne(@Param('id') id: string, @Request() req: any) {
+    return this.ordersService.findOne(id, req.user);
   }
 
   @Get(':id/pdf')
-  @ApiOperation({ summary: 'Generar y descargar remisión / comprobante en formato PDF' })
-  async downloadPdf(@Param('id') id: string, @Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
-    const order = await this.ordersService.findOne(id);
+  @ApiOperation({ summary: 'Generar y descargar remisión PDF con verificación de propiedad / IDOR' })
+  async downloadPdf(@Param('id') id: string, @Request() req: any, @Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
+    const order = await this.ordersService.findOne(id, req.user);
     const pdfBuffer = await this.pdfGeneratorService.generateOrderPdf(order);
 
     res.set({
@@ -61,13 +61,13 @@ export class OrdersController {
   }
 
   @Patch(':id/status')
-  @Roles(RoleEnum.ADMINISTRADOR, RoleEnum.BODEGA, RoleEnum.VENDEDOR, RoleEnum.LOGISTICA)
-  @ApiOperation({ summary: 'Actualizar el estado de un pedido (Bodega / Logística / Admin)' })
+  @RequirePermissions(PermissionEnum.ORDER_UPDATE_STATUS)
+  @ApiOperation({ summary: 'Actualizar el estado de un pedido (Bodega / Logística / Admin / Vendedor Propietario)' })
   async updateStatus(
     @Param('id') id: string,
     @Body() updateOrderStatusDto: UpdateOrderStatusDto,
     @Request() req: any,
   ) {
-    return this.ordersService.updateStatus(id, updateOrderStatusDto, req.user.id);
+    return this.ordersService.updateStatus(id, updateOrderStatusDto, req.user);
   }
 }
