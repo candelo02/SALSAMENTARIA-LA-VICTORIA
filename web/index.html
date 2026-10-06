@@ -393,38 +393,120 @@
 
       <!-- SECTION 5: RUTAS & TRAZABILIDAD GPS -->
       <section id="sec-rutas" class="hidden space-y-4">
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <!-- Control Header -->
+        <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg">🚚 Logística de Despacho & Trazabilidad de Rutas GPS</h3>
+            <p class="text-xs text-slate-500">Planificación de rutas, asignación de vehículos, consolidación de carga e inventario requerido.</p>
+          </div>
+          <div class="flex space-x-2">
+            <button onclick="openCreateRouteModal()" class="bg-red-700 hover:bg-red-800 text-white font-bold text-xs px-3.5 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+              <span>➕ Programar Nueva Ruta</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Leaflet Map -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
           <div class="flex justify-between items-center">
-            <div>
-              <h3 class="font-bold text-slate-900 text-lg">Trazabilidad GPS & Monitoreo de Rutas en Tiempo Real</h3>
-              <p class="text-xs text-slate-500">Visualización de coordenadas de clientes, paradas de entrega y trazado de ruta comercial.</p>
-            </div>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-              ● Monitoreo GPS En Vivo
+            <h4 class="font-bold text-slate-800 text-sm">📍 Mapa de Trazabilidad en Tiempo Real</h4>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+              ● GPS Activo en Vehículo
             </span>
           </div>
+          <div id="routeMap" class="h-80 w-full rounded-xl border border-slate-300 shadow-inner z-0"></div>
+        </div>
 
-          <!-- Interactive Leaflet Map -->
-          <div id="routeMap" class="h-96 w-full rounded-xl border border-slate-300 shadow-inner z-0"></div>
-
-          <!-- Route Info & Assigned Stops -->
-          <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
-            <div class="flex justify-between items-center">
-              <div>
-                <span class="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded">RUTA #001 - TUMACO CENTRO & INDUSTRIAL</span>
-                <h4 class="font-bold text-slate-900 mt-1">Vendedor / Conductor: Carlos Vendedor</h4>
+        <!-- Scheduled & Active Routes Grid -->
+        <div id="routesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Route 1 Card -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-xs font-bold text-red-700 bg-red-100 px-2.5 py-1 rounded-full">RUTA #RUT-001</span>
+                  <h4 class="font-bold text-slate-900 text-base mt-1">Zona Tumaco & Costa Pacífica</h4>
+                </div>
+                <span id="badge-status-RUT-001" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">EN PROGRESO</span>
               </div>
-              <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">EN PROGRESO</span>
+              <div class="bg-slate-50 p-3 rounded-lg text-xs space-y-1.5 text-slate-700">
+                <p><strong>👨‍✈️ Vendedor / Conductor:</strong> Carlos Vendedor</p>
+                <p><strong>🚛 Vehículo:</strong> Furgón Chevrolet NHR #2 (Placa VCT-942)</p>
+                <p><strong>📅 Fecha:</strong> 06 de Octubre, 2026</p>
+                <p><strong>📍 Paradas / Clientes:</strong> 2 Entregas Programadas</p>
+              </div>
+
+              <!-- Order Stops -->
+              <div class="border rounded-lg p-2.5 bg-slate-50/50 text-xs space-y-2">
+                <div class="flex justify-between items-center border-b pb-1">
+                  <span>📍 1. Restaurante El Sabor del Valle</span>
+                  <span class="font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">Pedido #1001 ($116.000)</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span>📍 2. Distribuidora La Economía</span>
+                  <span class="font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">Pedido #1002 ($49.000)</span>
+                </div>
+              </div>
             </div>
-            <p class="text-xs text-slate-600">Vehículo: Furgón NHR #2 | Coordenadas Origen: 1.800 N, -78.760 W (Planta La Victoria)</p>
-            <div class="bg-white p-3 rounded border text-xs space-y-2">
-              <div class="flex justify-between border-b pb-1">
-                <span>📍 Parada 1: Restaurante El Sabor del Valle (Lat: 1.801, Lng: -78.761)</span>
-                <span class="font-bold text-amber-600">Pedido #1001 (Alister en Bodega)</span>
+
+            <!-- Route Actions -->
+            <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-2 justify-between">
+              <button onclick="openRouteStockModal('RUT-001')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center space-x-1">
+                <span>📦 Verificar Carga Requerida</span>
+              </button>
+              <div class="flex space-x-2">
+                <button onclick="dispatchRoute('RUT-001')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                  🚀 Despachar Ruta
+                </button>
+                <button onclick="completeRoute('RUT-001')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                  ✅ Finalizar Entrega
+                </button>
               </div>
-              <div class="flex justify-between">
-                <span>📍 Parada 2: Distribuidora La Economía (Lat: 1.805, Lng: -78.765)</span>
-                <span class="font-bold text-blue-600">Pedido #1002 (En Alistamiento)</span>
+            </div>
+          </div>
+
+          <!-- Route 2 Card -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">RUTA #RUT-002</span>
+                  <h4 class="font-bold text-slate-900 text-base mt-1">Zona Pasto Centro & Sur</h4>
+                </div>
+                <span id="badge-status-RUT-002" class="text-xs bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full">PLANIFICADA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-lg text-xs space-y-1.5 text-slate-700">
+                <p><strong>👨‍✈️ Vendedor / Conductor:</strong> Encargado Sales / Camilo</p>
+                <p><strong>🚛 Vehículo:</strong> Camión Hino NQR #1 (Placa KLV-108)</p>
+                <p><strong>📅 Fecha:</strong> 06 de Octubre, 2026</p>
+                <p><strong>📍 Paradas / Clientes:</strong> 2 Entregas Programadas</p>
+              </div>
+
+              <!-- Order Stops -->
+              <div class="border rounded-lg p-2.5 bg-slate-50/50 text-xs space-y-2">
+                <div class="flex justify-between items-center border-b pb-1">
+                  <span>📍 1. Fast Food El Castillo</span>
+                  <span class="font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">Pedido #1003 ($85.000)</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span>📍 2. Supermercado El Ahorro</span>
+                  <span class="font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">Pedido #1004 ($245.000)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Route Actions -->
+            <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-2 justify-between">
+              <button onclick="openRouteStockModal('RUT-002')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center space-x-1">
+                <span>📦 Verificar Carga Requerida</span>
+              </button>
+              <div class="flex space-x-2">
+                <button onclick="dispatchRoute('RUT-002')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                  🚀 Despachar Ruta
+                </button>
+                <button onclick="completeRoute('RUT-002')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                  ✅ Finalizar Entrega
+                </button>
               </div>
             </div>
           </div>
@@ -475,6 +557,97 @@
         </div>
       </div>
     </div>
+
+    <!-- MODAL PROGRAMAR NUEVA RUTA -->
+    <div id="modalCreateRoute" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="font-bold text-slate-900 text-lg">🚚 Programar Nueva Ruta de Distribución</h3>
+          <button onclick="closeCreateRouteModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+        <div class="space-y-3 text-xs">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Código de Ruta</label>
+              <input type="text" id="routeCode" value="RUT-2026-003" class="w-full border p-2 rounded bg-slate-50 font-bold text-red-700">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Zona de Cobertura</label>
+              <select id="routeZone" class="w-full border p-2 rounded">
+                <option value="Ipiales & Frontera Ecuador">Ipiales & Frontera Ecuador</option>
+                <option value="La Unión & Norte de Nariño">La Unión & Norte de Nariño</option>
+                <option value="Pasto Sur & Catambuco">Pasto Sur & Catambuco</option>
+                <option value="Tumaco & Costa Pacífica">Tumaco & Costa Pacífica</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Vendedor / Conductor Asignado</label>
+              <select id="routeVendor" class="w-full border p-2 rounded">
+                <option value="Carlos Vendedor (Vendedor Principal)">Carlos Vendedor (Vendedor Principal)</option>
+                <option value="Encargado Sales / Camilo">Encargado Sales / Camilo</option>
+                <option value="Supervisora Ana María">Supervisora Ana María</option>
+              </select>
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Vehículo de Despacho</label>
+              <input type="text" id="routeVehicle" value="Furgón Isuzu NPR #3 (Placa LVK-802)" class="w-full border p-2 rounded">
+            </div>
+          </div>
+
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Clientes / Paradas a Incluir en la Ruta</label>
+            <div class="border p-3 rounded-lg bg-slate-50 space-y-2 max-h-36 overflow-y-auto">
+              <label class="flex items-center space-x-2">
+                <input type="checkbox" checked class="rounded text-red-600">
+                <span>🏬 Restaurante El Sabor del Valle (Tumaco - Pedido #1001)</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="checkbox" checked class="rounded text-red-600">
+                <span>🏬 Distribuidora La Economía (Tumaco - Pedido #1002)</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="checkbox" checked class="rounded text-red-600">
+                <span>🏬 Fast Food El Castillo (Pasto - Pedido #1003)</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="checkbox" class="rounded text-red-600">
+                <span>🏬 Supermercado El Ahorro (Pasto - Pedido #1004)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-2 border-t pt-3">
+          <button onclick="closeCreateRouteModal()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg">Cancelar</button>
+          <button onclick="saveNewRoute()" class="px-4 py-2 bg-red-700 text-white text-xs font-bold rounded-lg hover:bg-red-800">Programar Ruta & Sincronizar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL VERIFICACIÓN DE CARGA Y REQUERIMIENTO DE INVENTARIO POR RUTA -->
+    <div id="modalRouteStock" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl max-w-xl w-full p-6 space-y-4 shadow-xl">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h3 id="stockModalTitle" class="font-bold text-slate-900 text-lg">📦 Consolidado de Carga para Ruta</h3>
+            <p class="text-xs text-slate-500">Comparación de unidades requeridas vs stock físico en Bodega</p>
+          </div>
+          <button onclick="closeRouteStockModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+
+        <div id="stockModalContent" class="space-y-3 text-xs">
+          <!-- Dynamically filled -->
+        </div>
+
+        <div class="flex justify-end border-t pt-3">
+          <button onclick="closeRouteStockModal()" class="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
   </div>
 
   <script>
@@ -556,6 +729,142 @@
       if (newDesc !== null) {
         alert('Descripción de "' + productName + '" actualizada correctamente en el catálogo.');
       }
+    }
+
+    function openCreateRouteModal() {
+      document.getElementById('modalCreateRoute').classList.remove('hidden');
+    }
+
+    function closeCreateRouteModal() {
+      document.getElementById('modalCreateRoute').classList.add('hidden');
+    }
+
+    function saveNewRoute() {
+      const code = document.getElementById('routeCode').value.trim();
+      const zone = document.getElementById('routeZone').value;
+      const vendor = document.getElementById('routeVendor').value;
+      const vehicle = document.getElementById('routeVehicle').value.trim();
+
+      const grid = document.getElementById('routesGrid');
+      const newCard = document.createElement('div');
+      newCard.className = 'bg-white p-5 rounded-xl border border-red-200 shadow-sm space-y-4 flex flex-col justify-between';
+      newCard.innerHTML = `
+        <div class="space-y-3">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-xs font-bold text-red-700 bg-red-100 px-2.5 py-1 rounded-full">RUTA #${code}</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">Zona ${zone}</h4>
+            </div>
+            <span id="badge-status-${code}" class="text-xs bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full">PLANIFICADA</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg text-xs space-y-1.5 text-slate-700">
+            <p><strong>👨‍✈️ Vendedor / Conductor:</strong> ${vendor}</p>
+            <p><strong>🚛 Vehículo:</strong> ${vehicle}</p>
+            <p><strong>📅 Fecha:</strong> ${new Date().toLocaleDateString('es-CO')}</p>
+            <p><strong>📍 Paradas / Clientes:</strong> 3 Entregas Asignadas</p>
+          </div>
+          <div class="border rounded-lg p-2.5 bg-slate-50/50 text-xs space-y-2">
+            <div class="flex justify-between items-center border-b pb-1">
+              <span>📍 1. Restaurante El Sabor del Valle</span>
+              <span class="font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">Pedido #1001</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span>📍 2. Fast Food El Castillo</span>
+              <span class="font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">Pedido #1003</span>
+            </div>
+          </div>
+        </div>
+        <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-2 justify-between">
+          <button onclick="openRouteStockModal('${code}')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center space-x-1">
+            <span>📦 Verificar Carga Requerida</span>
+          </button>
+          <div class="flex space-x-2">
+            <button onclick="dispatchRoute('${code}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+              🚀 Despachar Ruta
+            </button>
+            <button onclick="completeRoute('${code}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+              ✅ Finalizar Entrega
+            </button>
+          </div>
+        </div>
+      `;
+
+      grid.prepend(newCard);
+      closeCreateRouteModal();
+      alert(`¡Ruta '${code}' programada exitosamente en el sistema de distribución de la fábrica!`);
+    }
+
+    function openRouteStockModal(routeCode) {
+      const modal = document.getElementById('modalRouteStock');
+      const title = document.getElementById('stockModalTitle');
+      const content = document.getElementById('stockModalContent');
+
+      title.innerText = `📦 Consolidado de Carga Requerida - Ruta ${routeCode}`;
+
+      content.innerHTML = `
+        <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-lg flex justify-between items-center">
+          <div>
+            <span class="font-bold text-emerald-900 text-sm">Estado de Bodega: LISTO PARA DESPACHO</span>
+            <p class="text-slate-600">Todos los productos requeridos tienen existencias suficientes en inventario.</p>
+          </div>
+          <span class="bg-emerald-600 text-white font-bold px-2.5 py-1 rounded text-xs">100% DISPONIBLE</span>
+        </div>
+
+        <table class="w-full text-left border-collapse mt-2">
+          <thead>
+            <tr class="bg-slate-100 border-b text-slate-700">
+              <th class="p-2">Producto Requerido</th>
+              <th class="p-2 text-center">Cant. Requerida</th>
+              <th class="p-2 text-center">Stock Bodega</th>
+              <th class="p-2 text-right">Estado</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="p-2 font-semibold">Salsa de Tomate Especial 500ml</td>
+              <td class="p-2 text-center font-bold text-red-700">35 Frascos</td>
+              <td class="p-2 text-center text-slate-700">120 Frascos</td>
+              <td class="p-2 text-right"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">SUFICIENTE</span></td>
+            </tr>
+            <tr>
+              <td class="p-2 font-semibold">Salsa de Ajo Casera 250ml</td>
+              <td class="p-2 text-center font-bold text-red-700">20 Botellas</td>
+              <td class="p-2 text-center text-slate-700">45 Botellas</td>
+              <td class="p-2 text-right"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">SUFICIENTE</span></td>
+            </tr>
+            <tr>
+              <td class="p-2 font-semibold">Aderezo BBQ Ahumado 1kg</td>
+              <td class="p-2 text-center font-bold text-red-700">5 Galones</td>
+              <td class="p-2 text-center text-slate-700">8 Galones</td>
+              <td class="p-2 text-right"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">SUFICIENTE</span></td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeRouteStockModal() {
+      document.getElementById('modalRouteStock').classList.add('hidden');
+    }
+
+    function dispatchRoute(routeCode) {
+      const badge = document.getElementById(`badge-status-${routeCode}`);
+      if (badge) {
+        badge.className = 'text-xs bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full';
+        badge.innerText = 'EN RUTA';
+      }
+      alert(`🚀 Ruta ${routeCode} despachada oficialmente. Los pedidos asociados han cambiado a estado 'EN_RUTA' y el conductor inició el recorrido GPS.`);
+    }
+
+    function completeRoute(routeCode) {
+      const badge = document.getElementById(`badge-status-${routeCode}`);
+      if (badge) {
+        badge.className = 'text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full';
+        badge.innerText = 'COMPLETADA';
+      }
+      alert(`✅ Ruta ${routeCode} finalizada con éxito. Todos los pedidos han sido marcados como 'ENTREGADO' a los clientes.`);
     }
 
     function initLeafletMap() {
