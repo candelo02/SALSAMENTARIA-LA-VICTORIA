@@ -60,6 +60,21 @@
 
       <!-- SECTION 1: DASHBOARD GENERAL -->
       <section id="sec-dashboard" class="space-y-6">
+        <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Resumen Ejecutivo & Reportes Comercial</h2>
+            <p class="text-xs text-slate-500">Descargue reportes detallados en formato Microsoft Excel (.xlsx) para auditoría y comisiones.</p>
+          </div>
+          <div class="space-x-2">
+            <button onclick="exportSalesExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-2 rounded-lg inline-flex items-center shadow-sm">
+              📊 Exportar Ventas (.xlsx)
+            </button>
+            <button onclick="exportInventoryExcel()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-2 rounded-lg inline-flex items-center shadow-sm">
+              📦 Exportar Inventario (.xlsx)
+            </button>
+          </div>
+        </div>
+
         <!-- KPI Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
@@ -389,6 +404,16 @@
     function downloadPdf(id) {
       alert('Descargando Remisión PDF del Pedido #' + id + ' desde http://localhost:3000/orders/' + id + '/pdf...');
       window.open('http://localhost:3000/orders/' + id + '/pdf', '_blank');
+    }
+
+    function exportSalesExcel() {
+      alert('Generando y descargando Reporte de Ventas en Excel (.xlsx) desde http://localhost:3000/reports/sales/excel...');
+      window.open('http://localhost:3000/reports/sales/excel', '_blank');
+    }
+
+    function exportInventoryExcel() {
+      alert('Generando y descargando Reporte de Inventario en Excel (.xlsx) desde http://localhost:3000/reports/inventory/excel...');
+      window.open('http://localhost:3000/reports/inventory/excel', '_blank');
     }
 
     function refreshOrders() {
