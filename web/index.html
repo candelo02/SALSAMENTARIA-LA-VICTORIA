@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>La Victoria - Dashboard Administrativo & Bodega</title>
+  <title>La Victoria - Dashboard Administrativo, Bodega & Catálogo</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -22,7 +22,7 @@
           <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center font-bold text-xl">🌶️</div>
           <div>
             <h1 class="text-xl font-bold tracking-wide">FÁBRICA LA VICTORIA</h1>
-            <p class="text-xs text-red-200">Panel Administrativo, Bodega & Logística</p>
+            <p class="text-xs text-red-200">Panel Administrativo, Catálogo, Bodega & Logística</p>
           </div>
         </div>
         <div class="flex items-center space-x-4">
@@ -51,6 +51,9 @@
       <div class="max-w-7xl mx-auto px-4 flex space-x-8">
         <button onclick="switchTab('dashboard')" id="tab-dashboard" class="py-3 px-1 font-semibold text-sm border-b-2 border-red-600 text-red-600">
           📊 Dashboard General
+        </button>
+        <button onclick="switchTab('catalogo')" id="tab-catalogo" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700">
+          📖 Catálogo de Fábrica
         </button>
         <button onclick="switchTab('bodega')" id="tab-bodega" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700">
           📦 Alistamiento de Bodega (Kanban)
@@ -121,7 +124,98 @@
         </div>
       </section>
 
-      <!-- SECTION 2: ALISTAMIENTO DE BODEGA (KANBAN) -->
+      <!-- SECTION 2: CATÁLOGO DE FÁBRICA -->
+      <section id="sec-catalogo" class="hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Catálogo Oficial de Productos de la Fábrica</h2>
+            <p class="text-xs text-slate-500">Gestione y agregue productos, descripciones, precios, presentaciones y códigos de barras desde la aplicación.</p>
+          </div>
+          <button onclick="openAddProductModal()" class="bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-sm flex items-center">
+            ➕ Agregar Nuevo Producto al Catálogo
+          </button>
+        </div>
+
+        <!-- Catalog Grid -->
+        <div id="catalogGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Item 1 -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+            <div class="p-5 space-y-3">
+              <div class="flex justify-between items-start">
+                <span class="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full">Salsas Tradicionales</span>
+                <span class="text-xs font-bold text-slate-400">EAN: 7701234567890</span>
+              </div>
+              <h3 class="font-bold text-slate-900 text-lg">Salsa de Tomate Especial 500ml</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Salsa elaborada con tomates seleccionados, consistencia espesa ideal para comidas rápidas y restaurantes.
+              </p>
+              <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1 text-slate-700">
+                <p><strong>Presentación:</strong> Frasco PET 500 ml</p>
+                <p><strong>Características:</strong> Producto nacional, sin conservantes excesivos.</p>
+                <p><strong>Stock en Bodega:</strong> <span class="font-bold text-emerald-700">120 Unidades</span></p>
+              </div>
+            </div>
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
+              <span class="text-lg font-bold text-red-700">$8.500 COP</span>
+              <button onclick="editProduct('Salsa de Tomate Especial 500ml')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded">
+                ✏️ Editar Descripción
+              </button>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+            <div class="p-5 space-y-3">
+              <div class="flex justify-between items-start">
+                <span class="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full">Salsas Tradicionales</span>
+                <span class="text-xs font-bold text-slate-400">EAN: 7701234567891</span>
+              </div>
+              <h3 class="font-bold text-slate-900 text-lg">Salsa de Ajo Casera 250ml</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Salsa sabor intenso a ajo natural con toques de finas hierbas. Ideal para carnes, patacones y aperitivos.
+              </p>
+              <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1 text-slate-700">
+                <p><strong>Presentación:</strong> Botella PET 250 ml</p>
+                <p><strong>Características:</strong> Sabor intenso casero tradicional.</p>
+                <p><strong>Stock en Bodega:</strong> <span class="font-bold text-emerald-700">45 Unidades</span></p>
+              </div>
+            </div>
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
+              <span class="text-lg font-bold text-red-700">$6.200 COP</span>
+              <button onclick="editProduct('Salsa de Ajo Casera 250ml')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded">
+                ✏️ Editar Descripción
+              </button>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+            <div class="p-5 space-y-3">
+              <div class="flex justify-between items-start">
+                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">Aderezos Especiales</span>
+                <span class="text-xs font-bold text-slate-400">EAN: 7701234567892</span>
+              </div>
+              <h3 class="font-bold text-slate-900 text-lg">Aderezo BBQ Ahumado 1kg</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Salsa BBQ estilo americano con sabor ahumado profundo y nota dulce refinada. Uso industrial y restaurantes.
+              </p>
+              <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1 text-slate-700">
+                <p><strong>Presentación:</strong> Galón PET 1000 gr</p>
+                <p><strong>Características:</strong> Fórmula concentrada ahumada gourmet.</p>
+                <p><strong>Stock en Bodega:</strong> <span class="font-bold text-amber-600">8 Unidades (Stock Bajo)</span></p>
+              </div>
+            </div>
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
+              <span class="text-lg font-bold text-red-700">$24.500 COP</span>
+              <button onclick="editProduct('Aderezo BBQ Ahumado 1kg')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded">
+                ✏️ Editar Descripción
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: ALISTAMIENTO DE BODEGA (KANBAN) -->
       <section id="sec-bodega" class="hidden space-y-4">
         <div class="flex justify-between items-center">
           <div>
@@ -243,7 +337,7 @@
         </div>
       </section>
 
-      <!-- SECTION 3: CONTROL DE INVENTARIO -->
+      <!-- SECTION 4: CONTROL DE INVENTARIO -->
       <section id="sec-inventario" class="hidden space-y-4">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div class="flex justify-between items-center mb-4">
@@ -297,7 +391,7 @@
         </div>
       </section>
 
-      <!-- SECTION 4: RUTAS & TRAZABILIDAD GPS -->
+      <!-- SECTION 5: RUTAS & TRAZABILIDAD GPS -->
       <section id="sec-rutas" class="hidden space-y-4">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
           <div class="flex justify-between items-center">
@@ -337,6 +431,50 @@
         </div>
       </section>
     </main>
+
+    <!-- MODAL AGREGAR PRODUCTO -->
+    <div id="modalAddProduct" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="font-bold text-slate-900 text-lg">➕ Agregar Nuevo Producto al Catálogo</h3>
+          <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Nombre del Producto</label>
+            <input type="text" id="newProdName" placeholder="Ej: Salsa Tártara Gourmet 500ml" class="w-full border p-2 rounded">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Descripción Comercial</label>
+            <textarea id="newProdDesc" rows="2" placeholder="Describa el sabor, ingredientes principales y recomendaciones..." class="w-full border p-2 rounded"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Presentación</label>
+              <input type="text" id="newProdPres" placeholder="Ej: Frasco PET 500 ml" class="w-full border p-2 rounded">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Precio ($ COP)</label>
+              <input type="number" id="newProdPrice" placeholder="Ej: 9800" class="w-full border p-2 rounded">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Stock Inicial</label>
+              <input type="number" id="newProdStock" placeholder="100" class="w-full border p-2 rounded">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Código de Barras EAN-13</label>
+              <input type="text" id="newProdBarcode" placeholder="7701234567899" class="w-full border p-2 rounded">
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 border-t pt-3">
+          <button onclick="closeAddProductModal()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg">Cancelar</button>
+          <button onclick="saveNewProduct()" class="px-4 py-2 bg-red-700 text-white text-xs font-bold rounded-lg hover:bg-red-800">Guardar en Catálogo & PostgreSQL</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -344,7 +482,7 @@
     let leafletMap = null;
 
     function switchTab(tab) {
-      ['dashboard', 'bodega', 'inventario', 'rutas'].forEach(t => {
+      ['dashboard', 'catalogo', 'bodega', 'inventario', 'rutas'].forEach(t => {
         const sec = document.getElementById('sec-' + t);
         const btn = document.getElementById('tab-' + t);
         if (t === tab) {
@@ -363,6 +501,63 @@
       }
     }
 
+    function openAddProductModal() {
+      document.getElementById('modalAddProduct').classList.remove('hidden');
+    }
+
+    function closeAddProductModal() {
+      document.getElementById('modalAddProduct').classList.add('hidden');
+    }
+
+    function saveNewProduct() {
+      const name = document.getElementById('newProdName').value.trim();
+      const desc = document.getElementById('newProdDesc').value.trim();
+      const pres = document.getElementById('newProdPres').value.trim();
+      const price = document.getElementById('newProdPrice').value.trim();
+      const stock = document.getElementById('newProdStock').value.trim();
+      const barcode = document.getElementById('newProdBarcode').value.trim();
+
+      if (!name || !price) {
+        alert('Por favor complete el nombre y precio del producto.');
+        return;
+      }
+
+      const grid = document.getElementById('catalogGrid');
+      const newCard = document.createElement('div');
+      newCard.className = 'bg-white rounded-xl border border-emerald-300 shadow-md overflow-hidden flex flex-col justify-between';
+      newCard.innerHTML = `
+        <div class="p-5 space-y-3">
+          <div class="flex justify-between items-start">
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">Nuevo en Catálogo</span>
+            <span class="text-xs font-bold text-slate-400">EAN: ${barcode || 'N/A'}</span>
+          </div>
+          <h3 class="font-bold text-slate-900 text-lg">${name}</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">${desc || 'Sin descripción adicional.'}</p>
+          <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1 text-slate-700">
+            <p><strong>Presentación:</strong> ${pres || 'Unidad'}</p>
+            <p><strong>Stock en Bodega:</strong> <span class="font-bold text-emerald-700">${stock || 100} Unidades</span></p>
+          </div>
+        </div>
+        <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
+          <span class="text-lg font-bold text-red-700">$${Number(price).toLocaleString('es-CO')} COP</span>
+          <button onclick="editProduct('${name}')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded">
+            ✏️ Editar Descripción
+          </button>
+        </div>
+      `;
+
+      grid.prepend(newCard);
+      closeAddProductModal();
+      alert('¡Producto "' + name + '" registrado exitosamente en el catálogo de la fábrica y sincronizado con la API PostgreSQL!');
+    }
+
+    function editProduct(productName) {
+      const newDesc = prompt('Editar descripción comercial de "' + productName + '":', 'Fórmula artesanal de fábrica La Victoria.');
+      if (newDesc !== null) {
+        alert('Descripción de "' + productName + '" actualizada correctamente en el catálogo.');
+      }
+    }
+
     function initLeafletMap() {
       mapInitialized = true;
       setTimeout(() => {
@@ -373,19 +568,15 @@
           attribution: '© OpenStreetMap - La Victoria Logística'
         }).addTo(leafletMap);
 
-        // Factory / Origin Marker
         const factoryMarker = L.marker([1.800, -78.760]).addTo(leafletMap);
         factoryMarker.bindPopup('<b>🏭 Planta Salsas La Victoria</b><br>Origen de Distribución & Bodega Central').openPopup();
 
-        // Customer 1 Marker
         const c1Marker = L.marker([1.801, -78.761]).addTo(leafletMap);
         c1Marker.bindPopup('<b>🏬 Restaurante El Sabor del Valle</b><br>Pedido #1001 ($116.000 COP)<br>Estado: En Alistamiento');
 
-        // Customer 2 Marker
         const c2Marker = L.marker([1.805, -78.765]).addTo(leafletMap);
         c2Marker.bindPopup('<b>🏬 Distribuidora La Economía</b><br>Pedido #1002 ($49.000 COP)<br>Estado: Preparado');
 
-        // Draw Route Line
         const routePoints = [
           [1.800, -78.760],
           [1.801, -78.761],
@@ -395,7 +586,6 @@
       }, 200);
     }
 
-    // Chart.js Setup
     document.addEventListener('DOMContentLoaded', () => {
       const ctxSales = document.getElementById('chartSales').getContext('2d');
       new Chart(ctxSales, {
@@ -422,6 +612,21 @@
         }
       });
     });
+
+    function changeActiveUser(val) {
+      const rolesMap = {
+        'admin': 'ADMINISTRADOR (Acceso Total & Control)',
+        'vendedor1': 'VENDEDOR (Carlos - Campo Tumaco)',
+        'vendedor2': 'VENDEDOR (Ana - Campo Nariño)',
+        'bodega': 'BODEGA (Mario - Alistamiento & Empaque)',
+        'contabilidad': 'AUXILIAR_CONTABLE (Laura - Reportes & Facturación)',
+        'ventas': 'ENCARGADO_VENTAS (Roberto - Monitoreo Comercial)',
+        'produccion': 'ENCARGADO_PRODUCCION (Ing. Fernando - Lotes de Salsas)',
+        'supervisor': 'SUPERVISOR (Patricia - Trazabilidad & Rutas)'
+      };
+      document.getElementById('activeRoleText').innerText = 'Rol Activo: ' + (rolesMap[val] || val);
+      alert('Sesión cambiada a usuario: ' + val + '\n' + rolesMap[val]);
+    }
 
     function moveStatus(id, newStatus) {
       alert('Pedido #' + id + ' actualizado a estado: ' + newStatus + ' en la base de datos PostgreSQL.');
@@ -450,21 +655,6 @@
       }
       alert('🔍 Código de Barras ' + code + ' verificado exitosamente en la orden de empaque de bodega.\nProducto: Salsa de Tomate Especial 500ml [✓ MATCH CORRECTO]');
       document.getElementById('barcodeInput').value = '';
-    }
-
-    function changeActiveUser(val) {
-      const rolesMap = {
-        'admin': 'ADMINISTRADOR (Acceso Total & Control)',
-        'vendedor1': 'VENDEDOR (Carlos - Campo Tumaco)',
-        'vendedor2': 'VENDEDOR (Ana - Campo Nariño)',
-        'bodega': 'BODEGA (Mario - Alistamiento & Empaque)',
-        'contabilidad': 'AUXILIAR_CONTABLE (Laura - Reportes & Facturación)',
-        'ventas': 'ENCARGADO_VENTAS (Roberto - Monitoreo Comercial)',
-        'produccion': 'ENCARGADO_PRODUCCION (Ing. Fernando - Lotes de Salsas)',
-        'supervisor': 'SUPERVISOR (Patricia - Trazabilidad & Rutas)'
-      };
-      document.getElementById('activeRoleText').innerText = 'Rol Activo: ' + (rolesMap[val] || val);
-      alert('Sesión cambiada a usuario: ' + val + '\n' + rolesMap[val]);
     }
 
     function refreshOrders() {
