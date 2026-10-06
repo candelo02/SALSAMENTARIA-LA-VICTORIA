@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { OrderStatusEnum, ProductStatusEnum, Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   async create(createOrderDto: CreateOrderDto, vendorId: string) {
     const { id: customId, customerId, items, notes, clientCreatedAt } = createOrderDto;
@@ -35,7 +39,7 @@ export class OrdersService {
     }
 
     // 3. Process Transaction: Calculate totals, verify stock, freeze unit prices, update inventory
-    return this.prisma.$transaction(async (tx) => {
+    const createdOrder = await this.prisma.$transaction(async (tx) => {
       let totalAmount = new Prisma.Decimal(0);
       const itemsToCreate = [];
       let isStockDeficient = false;
@@ -60,6 +64,7 @@ export class OrdersService {
 
         itemsToCreate.push({
           productId: product.id,
+          productName: product.name,
           quantity: item.quantity,
           unitPrice: unitPrice,
           subtotal: itemSubtotal,
@@ -103,8 +108,10 @@ export class OrdersService {
           let newStatus: ProductStatusEnum = ProductStatusEnum.DISPONIBLE;
           if (newStock === 0) {
             newStatus = ProductStatusEnum.AGOTADO;
-          } else if (newStock <= 10) { // Default min stock boundary
+          } else if (newStock <= 10) {
             newStatus = ProductStatusEnum.STOCK_BAJO;
+            // Notify Admin of low stock
+            await this.notificationsService.notifyLowStockToAdmin(i.productName, newStock);
           }
 
           await tx.product.update({
@@ -132,6 +139,15 @@ export class OrdersService {
 
       return order;
     });
+
+    // Notify Bodega of New Order
+    await this.notificationsService.notifyNewOrderToBodega(
+      createdOrder.orderNumber,
+      createdOrder.customer.name,
+      createdOrder.totalAmount.toString(),
+    );
+
+    return createdOrder;
   }
 
   async findAll(status?: OrderStatusEnum, vendorId?: string) {
@@ -188,7 +204,7 @@ export class OrdersService {
       return order;
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const updatedOrder = await this.prisma.$transaction(async (tx) => {
       // If cancelling order, restore inventory
       if (newStatus === OrderStatusEnum.CANCELADO && previousStatus !== OrderStatusEnum.PENDIENTE_DE_STOCK) {
         for (const item of order.items) {
@@ -202,7 +218,7 @@ export class OrdersService {
         }
       }
 
-      const updatedOrder = await tx.order.update({
+      const res = await tx.order.update({
         where: { id },
         data: { status: newStatus },
         include: {
@@ -222,7 +238,16 @@ export class OrdersService {
         },
       });
 
-      return updatedOrder;
+      return res;
     });
+
+    // Notify Vendor of Order Status Change
+    await this.notificationsService.notifyOrderStatusChangeToVendor(
+      updatedOrder.vendorId,
+      updatedOrder.orderNumber,
+      newStatus,
+    );
+
+    return updatedOrder;
   }
 }

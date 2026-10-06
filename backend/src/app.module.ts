@@ -7,6 +7,7 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { RoutesModule } from './modules/routes/routes.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RoutesModule } from './modules/routes/routes.module';
       envFilePath: '.env',
     }),
     PrismaModule,
+    NotificationsModule,
     AuthModule,
     ProductsModule,
     CustomersModule,
