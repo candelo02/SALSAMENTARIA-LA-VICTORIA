@@ -3,6 +3,9 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { OrdersService } from '../orders/orders.service';
 import { CustomersService } from '../customers/customers.service';
 import { SyncBatchDto } from './dto/sync-batch.dto';
+import { RoleEnum } from '@prisma/client';
+import { PermissionEnum } from '../auth/permissions/permissions.enum';
+import { hasPermission } from '../auth/permissions/permission-matrix';
 
 @Injectable()
 export class SyncService {
@@ -17,7 +20,7 @@ export class SyncService {
   async processSync(syncBatchDto: SyncBatchDto, userId: string) {
     const { clientSyncId, customers = [], orders = [] } = syncBatchDto;
 
-    // Check if sync batch was already processed
+    // Check if sync batch was already processed (Idempotency)
     const existingLog = await this.prisma.syncLog.findUnique({
       where: { clientSyncId },
     });
@@ -76,12 +79,17 @@ export class SyncService {
     };
   }
 
-  async getInitialStateData() {
-    // Endpoints for offline initialization (download catalog and active customers to SQLite)
-    const [products, categories, customers] = await Promise.all([
+  async getInitialStateData(requestingUser?: { id: string; role: RoleEnum }) {
+    const isVendorOnly = requestingUser && !hasPermission(requestingUser.role, PermissionEnum.ORDER_READ_ALL);
+
+    const [products, categories, customers, routes] = await Promise.all([
       this.prisma.product.findMany({ where: { isActive: true }, include: { category: true } }),
       this.prisma.category.findMany({ where: { isActive: true } }),
       this.prisma.customer.findMany({ where: { isActive: true } }),
+      this.prisma.route.findMany({
+        where: isVendorOnly ? { vendorId: requestingUser.id } : {},
+        include: { customers: { include: { customer: true } } },
+      }),
     ]);
 
     return {
@@ -89,6 +97,17 @@ export class SyncService {
       categories,
       products,
       customers,
+      routes,
     };
+  }
+
+  async getSyncLogs() {
+    return this.prisma.syncLog.findMany({
+      include: {
+        user: { select: { id: true, fullName: true, email: true, role: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
   }
 }

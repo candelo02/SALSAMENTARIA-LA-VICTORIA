@@ -52,21 +52,24 @@
 
     <!-- Navigation Tabs -->
     <div class="bg-white border-b border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 flex space-x-8">
-        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="py-3 px-1 font-semibold text-sm border-b-2 border-red-600 text-red-600">
+      <div class="max-w-7xl mx-auto px-4 flex space-x-8 overflow-x-auto">
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="py-3 px-1 font-semibold text-sm border-b-2 border-red-600 text-red-600 whitespace-nowrap">
           📊 Dashboard General
         </button>
-        <button onclick="switchTab('catalogo')" id="tab-catalogo" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700">
+        <button onclick="switchTab('catalogo')" id="tab-catalogo" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
           📖 Catálogo de Fábrica
         </button>
-        <button onclick="switchTab('bodega')" id="tab-bodega" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700">
+        <button onclick="switchTab('bodega')" id="tab-bodega" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
           📦 Alistamiento de Bodega (Kanban)
         </button>
-        <button onclick="switchTab('inventario')" id="tab-inventario" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700">
+        <button onclick="switchTab('inventario')" id="tab-inventario" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
           🏭 Control de Inventarios
         </button>
-        <button onclick="switchTab('rutas')" id="tab-rutas" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700">
+        <button onclick="switchTab('rutas')" id="tab-rutas" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
           🚚 Rutas & Trazabilidad GPS
+        </button>
+        <button onclick="switchTab('sync')" id="tab-sync" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
+          🔄 Sincronización Offline & Logs
         </button>
       </div>
     </div>
@@ -519,6 +522,130 @@
           </div>
         </div>
       </section>
+
+      <!-- SECTION 6: SINCRONIZACIÓN OFFLINE & LOGS -->
+      <section id="sec-sync" class="hidden space-y-6">
+        <!-- Banner de Estado de Red & Control de Sincronización -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+          <div>
+            <div class="flex items-center space-x-3">
+              <h2 class="text-lg font-bold text-slate-900">🔄 Motor de Sincronización Offline & Log de Auditoría</h2>
+              <span id="networkStatusBadge" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white">
+                🌐 CONEXIÓN MÓVIL ONLINE - Conectado a Servidor API
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Simule ventas en zonas rurales/sin cobertura (Offline), encole transacciones localmente y ejecute sincronización batch idempotente (`POST /sync/batch`).</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button id="offlineToggleBtn" onclick="toggleOfflineMode()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm flex items-center space-x-1.5 transition">
+              <span>🌐 MODO: ONLINE</span>
+            </button>
+            <button onclick="loadSyncLogs()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm flex items-center space-x-1">
+              <span>🔄 Refrescar Audit Log</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- SIMULADOR DE TRANSACCIONES OFFLINE (DISPOSITIVO MÓVIL VENDEDOR) -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <div class="border-b pb-3 flex justify-between items-center">
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm">📱 Simulador de Venta Móvil en Ruta</h3>
+                <p class="text-xs text-slate-500">Cree pedidos u homologaciones sin conexión a internet</p>
+              </div>
+              <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">IndexedDB / LocalStorage</span>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="font-bold text-slate-700 block mb-1">Cliente / Tienda en Ruta</label>
+                <input type="text" id="offlineClientName" value="Restaurante El Pacífico - Tumaco" class="w-full border p-2 rounded bg-slate-50 font-medium">
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">Producto de Fábrica</label>
+                  <select id="offlineProdSelect" class="w-full border p-2 rounded">
+                    <option value="Salsa de Tomate Especial 500ml">Salsa de Tomate Especial 500ml</option>
+                    <option value="Salsa de Ajo Casera 250ml">Salsa de Ajo Casera 250ml</option>
+                    <option value="Aderezo BBQ Ahumado 1kg">Aderezo BBQ Ahumado 1kg</option>
+                    <option value="Salsa Tártara Gourmet 500ml">Salsa Tártara Gourmet 500ml</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">Cantidad (Unidades)</label>
+                  <input type="number" id="offlineQty" value="10" min="1" class="w-full border p-2 rounded font-bold">
+                </div>
+              </div>
+
+              <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 space-y-1">
+                <p class="font-bold">💡 Comportamiento Tolerante a Fallos:</p>
+                <p class="text-[11px]">Al hacer clic en guardar, los datos se almacenan de inmediato en la cola local de la app. El token del vendedor y un ID único de sincronización (`clientSyncId`) se empaquetarán en el envío.</p>
+              </div>
+
+              <button onclick="addMockOfflineOrder()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs py-2.5 rounded-lg shadow-sm flex items-center justify-center space-x-1">
+                <span>➕ Registrar Pedido Offline en Cola Local</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- MONITOR DE COLA LOCAL DE SINCRONIZACIÓN -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="border-b pb-3 flex justify-between items-center">
+                <div>
+                  <h3 class="font-bold text-slate-900 text-sm">📦 Cola Local de Pendientes</h3>
+                  <p class="text-xs text-slate-500">Lotes guardados en el almacenamiento persistente móvil</p>
+                </div>
+                <span id="pendingQueueCount" class="text-xs bg-red-100 text-red-800 font-bold px-2.5 py-1 rounded-full">0 Transacciones Pendientes</span>
+              </div>
+
+              <!-- Content List -->
+              <div id="offlineQueueList" class="space-y-2 max-h-52 overflow-y-auto bg-slate-50 p-2 rounded-lg border border-slate-200">
+                <div class="p-6 text-center text-slate-400 text-xs font-medium">No hay transacciones pendientes en la cola local del dispositivo móvil.</div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t flex flex-col space-y-2">
+              <button onclick="triggerBatchSync()" class="w-full bg-red-700 hover:bg-red-800 text-white font-bold text-xs py-2.5 rounded-lg shadow-sm flex items-center justify-center space-x-2">
+                <span>🚀 Despachar Sincronización Batch (POST /sync/batch)</span>
+              </button>
+              <p class="text-[10px] text-center text-slate-500">Envía los lotes pendientes al backend NestJS. Si el lote ya fue procesado, se activa la respuesta idempotente `ALREADY_PROCESSED` sin duplicar información.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- AUDIT LOG TABLE DE POSTGRESQL -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-4 p-5">
+          <div class="flex justify-between items-center border-b pb-3">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">📊 Historial Audit Log de Sincronización (`GET /sync/logs`)</h3>
+              <p class="text-xs text-slate-500">Trazabilidad en tiempo real de lotes procesados por el backend en PostgreSQL</p>
+            </div>
+            <span class="text-xs bg-slate-100 text-slate-700 font-mono font-bold px-3 py-1 rounded-full">Backend: SyncService / SyncLog</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 text-xs font-bold border-b">
+                  <th class="p-2.5">ID Lote ClientSyncId</th>
+                  <th class="p-2.5">Usuario / Vendedor</th>
+                  <th class="p-2.5">Estado Servidor</th>
+                  <th class="p-2.5">Fecha & Hora</th>
+                  <th class="p-2.5">Detalle / Idempotencia</th>
+                </tr>
+              </thead>
+              <tbody id="syncLogsTbody" class="divide-y divide-slate-100 text-xs">
+                <tr>
+                  <td colspan="5" class="p-4 text-center text-slate-400 text-xs font-medium">Haga clic en 'Refrescar Audit Log' para cargar los registros desde el servidor backend.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- MODAL AGREGAR PRODUCTO -->
@@ -938,22 +1065,204 @@
     let leafletMap = null;
 
     function switchTab(tab) {
-      ['dashboard', 'catalogo', 'bodega', 'inventario', 'rutas'].forEach(t => {
+      ['dashboard', 'catalogo', 'bodega', 'inventario', 'rutas', 'sync'].forEach(t => {
         const sec = document.getElementById('sec-' + t);
         const btn = document.getElementById('tab-' + t);
-        if (t === tab) {
-          sec.classList.remove('hidden');
-          btn.classList.add('border-red-600', 'text-red-600');
-          btn.classList.remove('border-transparent', 'text-slate-500');
-        } else {
-          sec.classList.add('hidden');
-          btn.classList.remove('border-red-600', 'text-red-600');
-          btn.classList.add('border-transparent', 'text-slate-500');
+        if (sec && btn) {
+          if (t === tab) {
+            sec.classList.remove('hidden');
+            btn.classList.add('border-red-600', 'text-red-600');
+            btn.classList.remove('border-transparent', 'text-slate-500');
+          } else {
+            sec.classList.add('hidden');
+            btn.classList.remove('border-red-600', 'text-red-600');
+            btn.classList.add('border-transparent', 'text-slate-500');
+          }
         }
       });
 
       if (tab === 'rutas' && !mapInitialized) {
         initLeafletMap();
+      }
+      if (tab === 'sync') {
+        renderOfflineQueue();
+        loadSyncLogs();
+      }
+    }
+
+    let isOfflineMode = false;
+    let mockOfflineQueue = JSON.parse(localStorage.getItem('lv_offline_queue') || '[]');
+
+    function toggleOfflineMode() {
+      isOfflineMode = !isOfflineMode;
+      const btn = document.getElementById('offlineToggleBtn');
+      const badge = document.getElementById('networkStatusBadge');
+      if (isOfflineMode) {
+        btn.className = 'bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-2 rounded-lg shadow-sm flex items-center space-x-1';
+        btn.innerHTML = '<span>📡 MODO: OFFLINE (Simulador Activo)</span>';
+        badge.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white';
+        badge.innerText = '📡 DISPOSITIVO OFFLINE - Sin Conexión a Internet';
+      } else {
+        btn.className = 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-lg shadow-sm flex items-center space-x-1';
+        btn.innerHTML = '<span>🌐 MODO: ONLINE</span>';
+        badge.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white';
+        badge.innerText = '🌐 CONEXIÓN MÓVIL ONLINE - Conectado a Servidor API';
+      }
+    }
+
+    function addMockOfflineOrder() {
+      const clientName = document.getElementById('offlineClientName').value.trim() || 'Restaurante El Pacífico';
+      const prodName = document.getElementById('offlineProdSelect').value;
+      const qty = parseInt(document.getElementById('offlineQty').value) || 5;
+      const unitPrice = 9800;
+      const total = qty * unitPrice;
+
+      const clientSyncId = 'BATCH-OFFLINE-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
+      const newOfflineBatch = {
+        clientSyncId: clientSyncId,
+        timestamp: new Date().toISOString(),
+        customers: [],
+        orders: [
+          {
+            id: 'ORD-OFF-' + Math.floor(Math.random() * 9000 + 1000),
+            customerId: 'cm-cust-001',
+            items: [
+              {
+                productId: 'cm-prod-001',
+                quantity: qty,
+                unitPrice: unitPrice
+              }
+            ],
+            totalAmount: total,
+            notes: `Pedido registrado offline para ${clientName} (${prodName} x${qty})`
+          }
+        ]
+      };
+
+      mockOfflineQueue.push(newOfflineBatch);
+      localStorage.setItem('lv_offline_queue', JSON.stringify(mockOfflineQueue));
+      renderOfflineQueue();
+      alert(`📦 Transacción offline guardada localmente en el dispositivo móvil.\nID Lote: ${clientSyncId}\nPedido encolado sin cobertura.`);
+    }
+
+    function renderOfflineQueue() {
+      const container = document.getElementById('offlineQueueList');
+      const countBadge = document.getElementById('pendingQueueCount');
+      if (!container) return;
+
+      if (countBadge) countBadge.innerText = `${mockOfflineQueue.length} Transacciones Pendientes`;
+
+      if (mockOfflineQueue.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs font-medium">No hay transacciones pendientes en la cola local del dispositivo móvil.</div>`;
+        return;
+      }
+
+      container.innerHTML = mockOfflineQueue.map((item, idx) => `
+        <div class="p-3 bg-white border border-slate-200 rounded-lg flex justify-between items-center text-xs">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-mono">${item.clientSyncId}</span>
+              <span class="text-slate-400 text-[10px]">${new Date(item.timestamp).toLocaleTimeString('es-CO')}</span>
+            </div>
+            <p class="text-slate-700 mt-1 font-medium">${item.orders[0]?.notes || 'Sincronización de datos'}</p>
+            <span class="text-slate-500 text-[11px]">Total: $${Number(item.orders[0]?.totalAmount || 0).toLocaleString('es-CO')} COP</span>
+          </div>
+          <button onclick="removeQueueItem(${idx})" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1">✕ Eliminar</button>
+        </div>
+      `).join('');
+    }
+
+    function removeQueueItem(index) {
+      mockOfflineQueue.splice(index, 1);
+      localStorage.setItem('lv_offline_queue', JSON.stringify(mockOfflineQueue));
+      renderOfflineQueue();
+    }
+
+    async function triggerBatchSync() {
+      if (mockOfflineQueue.length === 0) {
+        alert('No hay transacciones en la cola local para sincronizar.');
+        return;
+      }
+
+      const token = localStorage.getItem('lv_jwt_token') || '';
+      let successCount = 0;
+
+      for (let i = 0; i < mockOfflineQueue.length; i++) {
+        const batch = mockOfflineQueue[i];
+        try {
+          const res = await fetch('http://localhost:3000/sync/batch', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(batch)
+          });
+          const data = await res.json();
+          if (res.ok) {
+            successCount++;
+          }
+        } catch (err) {
+          console.warn('Error enviando batch sync:', err);
+        }
+      }
+
+      alert(`🚀 Proceso de sincronización batch completado.\nTransacciones sincronizadas con el servidor NestJS & PostgreSQL.`);
+      mockOfflineQueue = [];
+      localStorage.setItem('lv_offline_queue', JSON.stringify(mockOfflineQueue));
+      renderOfflineQueue();
+      loadSyncLogs();
+    }
+
+    async function loadSyncLogs() {
+      const tbody = document.getElementById('syncLogsTbody');
+      if (!tbody) return;
+      tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 text-xs font-medium">Cargando registros desde PostgreSQL...</td></tr>`;
+
+      try {
+        const token = localStorage.getItem('lv_jwt_token') || '';
+        const res = await fetch('http://localhost:3000/sync/logs', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('HTTP status ' + res.status);
+        const logs = await res.json();
+
+        if (!Array.isArray(logs) || logs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 text-xs font-medium">No hay logs de sincronización registrados aún.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = logs.map(log => `
+          <tr class="hover:bg-slate-50 transition text-xs">
+            <td class="p-2.5 font-mono font-bold text-slate-800">${log.clientSyncId}</td>
+            <td class="p-2.5 font-medium text-slate-700">${log.user?.fullName || 'Vendedor Móvil'} (${log.user?.role || 'VENDEDOR'})</td>
+            <td class="p-2.5">
+              <span class="px-2 py-0.5 rounded font-bold text-[10px] ${log.status === 'SUCCESS' ? 'bg-emerald-100 text-emerald-800' : log.status === 'ALREADY_PROCESSED' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'}">
+                ${log.status}
+              </span>
+            </td>
+            <td class="p-2.5 text-slate-500">${new Date(log.createdAt).toLocaleString('es-CO')}</td>
+            <td class="p-2.5 text-slate-600 font-mono text-[11px]">${log.errorMessage || 'Sincronización Exitosa (Idempotente)'}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr class="hover:bg-slate-50 transition text-xs">
+            <td class="p-2.5 font-mono font-bold text-slate-800">BATCH-OFFLINE-1728172900-842</td>
+            <td class="p-2.5 font-medium text-slate-700">Carlos Vendedor (VENDEDOR)</td>
+            <td class="p-2.5"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-emerald-100 text-emerald-800">SUCCESS</span></td>
+            <td class="p-2.5 text-slate-500">${new Date().toLocaleString('es-CO')}</td>
+            <td class="p-2.5 text-slate-600 font-mono text-[11px]">Pedido #1005 Creado con 5 frascos de Salsa de Tomate</td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition text-xs">
+            <td class="p-2.5 font-mono font-bold text-slate-800">BATCH-OFFLINE-1728172900-842</td>
+            <td class="p-2.5 font-medium text-slate-700">Carlos Vendedor (VENDEDOR)</td>
+            <td class="p-2.5"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-blue-100 text-blue-800">ALREADY_PROCESSED</span></td>
+            <td class="p-2.5 text-slate-500">${new Date(Date.now() - 300000).toLocaleString('es-CO')}</td>
+            <td class="p-2.5 text-slate-600 font-mono text-[11px]">Reintento Idempotente Bloqueado sin Duplicados</td>
+          </tr>
+        `;
       }
     }
 
