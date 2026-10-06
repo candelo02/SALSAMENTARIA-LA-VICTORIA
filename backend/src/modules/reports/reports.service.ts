@@ -29,6 +29,7 @@ export class ReportsService {
       { header: 'Cliente', key: 'customerName', width: 30 },
       { header: 'NIT / Doc', key: 'nitDocument', width: 18 },
       { header: 'Vendedor', key: 'vendorName', width: 25 },
+      { header: 'Forma de Pago', key: 'paymentTerm', width: 18 },
       { header: 'Estado', key: 'status', width: 18 },
       { header: 'Total ($ COP)', key: 'totalAmount', width: 18 },
     ];
@@ -45,6 +46,7 @@ export class ReportsService {
         customerName: order.customer ? order.customer.name : 'N/A',
         nitDocument: order.customer ? order.customer.nitDocument : 'N/A',
         vendorName: order.vendor ? order.vendor.fullName : 'N/A',
+        paymentTerm: (order as any).paymentTerm || 'CONTADO',
         status: order.status,
         totalAmount: Number(order.totalAmount),
       });
