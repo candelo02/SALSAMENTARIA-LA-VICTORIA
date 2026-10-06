@@ -1,7 +1,8 @@
-import { Injectable, UnauthorizedException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { RoleEnum } from '@prisma/client';
 import { PermissionEnum } from './permissions/permissions.enum';
 import { hasPermission } from './permissions/permission-matrix';
@@ -13,6 +14,41 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
+
+  async createUser(createUserDto: CreateUserDto, requestingUser: { id: string; role: RoleEnum }) {
+    const { email, password, fullName, role } = createUserDto;
+
+    const existingUser = await this.prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      throw new ConflictException(`Ya existe un usuario registrado con el correo ${email}.`);
+    }
+
+    if (role === RoleEnum.SUPER_ADMIN) {
+      const canManageRoles = hasPermission(requestingUser.role, PermissionEnum.USER_MANAGE_ROLES);
+      if (!canManageRoles) {
+        throw new ForbiddenException('Acceso denegado (Elevación de Privilegios): Solo el SUPER_ADMIN puede registrar otros usuarios con el rol SUPER_ADMIN.');
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    return this.prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        fullName,
+        role: role || RoleEnum.VENDEDOR,
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
+  }
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;

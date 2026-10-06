@@ -115,6 +115,7 @@ describe('Security & Authorization Suite (RBAC, IDOR & Privilege Escalation)', (
         user: {
           findUnique: jest.fn(),
           update: jest.fn(),
+          create: jest.fn(),
         },
       };
       mockJwtService = {};
@@ -159,6 +160,32 @@ describe('Security & Authorization Suite (RBAC, IDOR & Privilege Escalation)', (
 
       expect(updated).toBeDefined();
       expect(updated.role).toBe(RoleEnum.ADMINISTRADOR);
+    });
+
+    it('SUPER_ADMIN SHOULD be allowed to create and provision new users with assigned credentials', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.create.mockResolvedValue({
+        id: 'new-user-id',
+        email: 'vendedor3@lavictoria.com',
+        fullName: 'Camilo Vendedor Campo',
+        role: RoleEnum.VENDEDOR,
+        isActive: true,
+      });
+
+      const superAdmin = { id: 'super-admin-id', role: RoleEnum.SUPER_ADMIN };
+      const created = await authService.createUser(
+        {
+          email: 'vendedor3@lavictoria.com',
+          password: 'Victoria2026!',
+          fullName: 'Camilo Vendedor Campo',
+          role: RoleEnum.VENDEDOR,
+        },
+        superAdmin,
+      );
+
+      expect(created).toBeDefined();
+      expect(created.email).toBe('vendedor3@lavictoria.com');
+      expect(created.role).toBe(RoleEnum.VENDEDOR);
     });
   });
 });
