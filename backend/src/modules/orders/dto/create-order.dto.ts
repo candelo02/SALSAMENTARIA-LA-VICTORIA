@@ -31,6 +31,11 @@ export class CreateOrderDto {
   @Type(() => OrderItemDto)
   items: OrderItemDto[];
 
+  @ApiProperty({ example: 'CONTADO', description: 'Forma de pago comercial: CONTADO, CREDITO_15, CREDITO_30, TRANSFERENCIA', required: false })
+  @IsString()
+  @IsOptional()
+  paymentTerm?: string;
+
   @ApiProperty({ example: 'Facturar a crédito 15 días', required: false })
   @IsString()
   @IsOptional()

@@ -12,36 +12,45 @@ export class PdfGeneratorService {
       doc.on('end', () => resolve(Buffer.concat(buffers)));
       doc.on('error', (err) => reject(err));
 
-      // Header Banner
-      doc.rect(40, 40, 515, 60).fill('#C62828');
-      doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(18).text('LA VICTORIA - SALSAS Y ADEREZOS', 55, 52);
-      doc.font('Helvetica').fontSize(10).text('Fábrica y Distribuidora B2B | Tumaco - Nariño', 55, 75);
+      // Header Banner with Logo
+      doc.rect(40, 40, 515, 65).fill('#C62828');
+      
+      // Vector Logo Badge (Shield / Bottle Icon)
+      doc.save();
+      doc.rect(52, 48, 36, 48).fill('#8E0000');
+      doc.path('M 70 52 L 80 62 L 70 88 L 60 62 Z').fill('#FFD54F');
+      doc.restore();
+
+      doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(16).text('LA VICTORIA - SALSAS Y ADEREZOS', 98, 49);
+      doc.font('Helvetica').fontSize(9).text('Fábrica y Distribuidora B2B | Tumaco - Nariño | NIT: 900.123.456-7', 98, 69);
+      doc.fontSize(8).text('Tel: +57 (315) 890-1234 | Ventas & Despachos Directos', 98, 83);
 
       // Order Title & Status
-      doc.fillColor('#333333').font('Helvetica-Bold').fontSize(14).text(`REMISIÓN DE PEDIDO #${order.orderNumber || order.id.substring(0, 8)}`, 40, 115);
-      doc.font('Helvetica').fontSize(10).text(`Estado: ${order.status}`, 400, 115, { align: 'right' });
-      doc.fontSize(9).fillColor('#666666').text(`Fecha de Emisión: ${new Date(order.createdAt).toLocaleString('es-CO')}`, 40, 132);
+      doc.fillColor('#333333').font('Helvetica-Bold').fontSize(13).text(`REMISIÓN OFICIAL DE DESPACHO #${order.orderNumber || order.id.substring(0, 8)}`, 40, 118);
+      doc.font('Helvetica').fontSize(10).text(`Estado: ${order.status}`, 400, 118, { align: 'right' });
+      doc.fontSize(9).fillColor('#666666').text(`Fecha de Emisión: ${new Date(order.createdAt).toLocaleString('es-CO')}`, 40, 134);
 
       doc.moveTo(40, 148).lineTo(555, 148).strokeColor('#EEEEEE').stroke();
 
       // Customer & Vendor Info Box
-      doc.rect(40, 155, 250, 85).fillAndStroke('#F9F9F9', '#E0E0E0');
+      doc.rect(40, 155, 250, 90).fillAndStroke('#F9F9F9', '#E0E0E0');
       doc.fillColor('#C62828').font('Helvetica-Bold').fontSize(10).text('DATOS DEL CLIENTE', 50, 163);
-      doc.fillColor('#333333').font('Helvetica').fontSize(9)
-        .text(`Cliente: ${order.customer ? order.customer.name : 'N/A'}`, 50, 178)
-        .text(`NIT/Doc: ${order.customer ? order.customer.nitDocument : 'N/A'}`, 50, 191)
-        .text(`Dirección: ${order.customer ? order.customer.address : 'N/A'}`, 50, 204)
-        .text(`Municipio: ${order.customer ? order.customer.municipality : 'N/A'}`, 50, 217);
+      doc.fillColor('#333333').font('Helvetica').fontSize(8.5)
+        .text(`Cliente: ${order.customer ? order.customer.name : 'N/A'}`, 50, 177)
+        .text(`NIT/Doc: ${order.customer ? order.customer.nitDocument : 'N/A'}`, 50, 190)
+        .text(`Dirección: ${order.customer ? order.customer.address : 'N/A'}`, 50, 203)
+        .text(`Municipio: ${order.customer ? order.customer.municipality : 'N/A'}`, 50, 216)
+        .text(`Teléfono: ${order.customer ? order.customer.phone : 'N/A'}`, 50, 229);
 
-      doc.rect(305, 155, 250, 85).fillAndStroke('#F9F9F9', '#E0E0E0');
-      doc.fillColor('#C62828').font('Helvetica-Bold').fontSize(10).text('DATOS DE VENTA & RUTA', 315, 163);
-      doc.fillColor('#333333').font('Helvetica').fontSize(9)
-        .text(`Vendedor: ${order.vendor ? order.vendor.fullName : 'N/A'}`, 315, 178)
-        .text(`Email: ${order.vendor ? order.vendor.email : 'N/A'}`, 315, 191)
-        .text(`Notas: ${order.notes || 'Sin observaciones'}`, 315, 204);
+      doc.rect(305, 155, 250, 90).fillAndStroke('#F9F9F9', '#E0E0E0');
+      doc.fillColor('#C62828').font('Helvetica-Bold').fontSize(10).text('DATOS DE VENTA & CONDICIONES', 315, 163);
+      doc.fillColor('#333333').font('Helvetica').fontSize(8.5)
+        .text(`Vendedor: ${order.vendor ? order.vendor.fullName : 'N/A'}`, 315, 177)
+        .text(`Forma de Pago: ${order.paymentTerm || 'CONTADO'}`, 315, 190)
+        .text(`Notas / Obs: ${order.notes || 'Sin observaciones'}`, 315, 203);
 
       // Table Header
-      let y = 255;
+      let y = 258;
       doc.rect(40, y, 515, 20).fill('#333333');
       doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(9)
         .text('ÍTEM / PRODUCTO', 50, y + 5)

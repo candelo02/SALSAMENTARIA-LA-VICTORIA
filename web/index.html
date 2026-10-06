@@ -81,6 +81,9 @@
         <button onclick="switchTab('clientes')" id="tab-clientes" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
           📍 Gestión de Clientes & GPS
         </button>
+        <button onclick="switchTab('pedidos')" id="tab-pedidos" class="py-3 px-1 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
+          🛒 Carrito de Compras Campo & Remisiones
+        </button>
       </div>
     </div>
 
@@ -769,6 +772,149 @@
                   <td class="p-2.5 text-right space-x-1">
                     <button onclick="alert('Historial de compras del cliente NIT 901.444.555-8')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold px-2 py-1 rounded">📜 Historial</button>
                   </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 8: CARRITO DE COMPRAS EN CAMPO & REMISIONES PDF -->
+      <section id="sec-pedidos" class="hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900 flex items-center space-x-2">
+              <span>🛒 Carrito de Compras en Campo & Remisiones PDF</span>
+              <span class="bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full font-semibold">Modulo Comercial B2B</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">Simulador de toma de pedidos en ruta con formas de pago comercial, deducción de inventarios y descarga de remisiones oficiales PDF.</p>
+          </div>
+          <button onclick="loadOrdersList()" class="bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm">
+            🔄 Actualizar Pedidos Backend
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Columna Izquierda: Selección de Cliente, Forma de Pago & Catálogo (8 cols) -->
+          <div class="lg:col-span-7 space-y-4">
+            <!-- Form Card: Cliente & Condición Comercial -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+              <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-red-700">1. Datos del Cliente & Términos de Pago</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">Cliente Seleccionado *</label>
+                  <select id="cartCustomerSelect" class="w-full border border-slate-300 rounded-lg p-2 font-medium focus:border-red-600 focus:outline-none">
+                    <option value="">Cargando clientes de fábrica...</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">Forma de Pago Comercial *</label>
+                  <select id="cartPaymentTerm" class="w-full border border-slate-300 rounded-lg p-2 font-semibold text-slate-800 focus:border-red-600 focus:outline-none">
+                    <option value="CONTADO">💵 Contado / Efectivo contra Entrega</option>
+                    <option value="CREDITO_15">📅 Crédito 15 Días (Aprobado)</option>
+                    <option value="CREDITO_30">📅 Crédito 30 Días (Distribuidor)</option>
+                    <option value="TRANSFERENCIA">📱 Transferencia Nequi / Bancolombia</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="font-bold text-slate-700 block text-xs mb-1">Observaciones / Notas de Despacho</label>
+                <input type="text" id="cartOrderNotes" placeholder="Ej: Entregar antes de las 11:00 AM en zona de bodega trasera" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:border-red-600 focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Product Selection Catalog Grid -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+              <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-red-700">2. Selección de Productos del Catálogo</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="cartProductPickerGrid">
+                <!-- Sample Product Item -->
+                <div class="border border-slate-200 rounded-lg p-3 flex justify-between items-center hover:border-red-300 transition bg-slate-50">
+                  <div>
+                    <h4 class="font-bold text-slate-800 text-xs">Salsa de Tomate 500g</h4>
+                    <p class="text-[11px] text-red-700 font-bold">$4.500 COP</p>
+                    <span class="text-[10px] text-emerald-700 font-semibold">Stock: 50 un.</span>
+                  </div>
+                  <button onclick="addToCart('prod-1', 'Salsa de Tomate 500g', 4500, 50)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm">
+                    + Añadir
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Resumen del Carrito & Finalización (5 cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+              <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-slate-900 text-sm text-red-700">🛒 Ítems en Carrito</h3>
+                <span class="text-xs font-bold bg-slate-100 px-2 py-0.5 rounded" id="cartItemCountBadge">0 Productos</span>
+              </div>
+
+              <!-- Cart Items Table -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="bg-slate-100 text-slate-700 border-b">
+                      <th class="p-2">Producto</th>
+                      <th class="p-2 text-center">Cant.</th>
+                      <th class="p-2 text-right">Subtotal</th>
+                      <th class="p-2 text-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="cartItemsTbody" class="divide-y divide-slate-100">
+                    <tr>
+                      <td colspan="4" class="p-4 text-center text-slate-400">El carrito de compras está vacío. Haga clic en (+ Añadir) en los productos del catálogo.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Total Box -->
+              <div class="bg-slate-900 text-white p-4 rounded-xl space-y-2">
+                <div class="flex justify-between items-center text-xs text-slate-300">
+                  <span>Subtotal Bruto:</span>
+                  <span id="cartSubtotalText" class="font-mono">$0 COP</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-slate-300">
+                  <span>Impuestos (IVA Incluido):</span>
+                  <span>$0 COP</span>
+                </div>
+                <div class="border-t border-slate-700 pt-2 flex justify-between items-center">
+                  <span class="font-bold text-sm">TOTAL PEDIDO:</span>
+                  <span id="cartTotalText" class="text-lg font-bold text-amber-400 font-mono">$0 COP</span>
+                </div>
+              </div>
+
+              <button onclick="submitFieldOrder()" class="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2">
+                <span>🚀 Confirmar & Crear Pedido (Enviar a Bodega)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla Historial de Pedidos Realizados & Remisiones PDF -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex justify-between items-center border-b pb-3">
+            <h3 class="font-bold text-slate-900 text-sm text-slate-800">📜 Historial de Pedidos & Descarga de Remisiones PDF</h3>
+            <span class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-1 rounded-full" id="ordersListCountBadge">0 Pedidos Registrados</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 font-bold border-b">
+                  <th class="p-2.5">N° Pedido</th>
+                  <th class="p-2.5">Cliente</th>
+                  <th class="p-2.5">Vendedor</th>
+                  <th class="p-2.5">Forma de Pago</th>
+                  <th class="p-2.5">Estado</th>
+                  <th class="p-2.5 text-right">Total Pedido</th>
+                  <th class="p-2.5 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="ordersHistoryTbody" class="divide-y divide-slate-100">
+                <tr>
+                  <td colspan="7" class="p-4 text-center text-slate-400">Cargando historial de pedidos desde el backend...</td>
                 </tr>
               </tbody>
             </table>
@@ -1499,7 +1645,7 @@
     let leafletMap = null;
 
     function switchTab(tab) {
-      ['dashboard', 'catalogo', 'bodega', 'inventario', 'rutas', 'sync', 'clientes'].forEach(t => {
+      ['dashboard', 'catalogo', 'bodega', 'inventario', 'rutas', 'sync', 'clientes', 'pedidos'].forEach(t => {
         const sec = document.getElementById('sec-' + t);
         const btn = document.getElementById('tab-' + t);
         if (sec && btn) {
@@ -1524,6 +1670,10 @@
       }
       if (tab === 'clientes') {
         loadCustomersTable();
+      }
+      if (tab === 'pedidos') {
+        loadFieldCartData();
+        loadOrdersList();
       }
     }
 
@@ -2427,7 +2577,315 @@
     }
 
     function refreshOrders() {
+      loadOrdersList();
       alert('Cargando pedidos en tiempo real desde http://localhost:3000/orders...');
+    }
+
+    let fieldCartItems = [];
+
+    async function loadFieldCartData() {
+      const customerSelect = document.getElementById('cartCustomerSelect');
+      if (customerSelect) {
+        try {
+          const token = localStorage.getItem('lv_jwt_token') || '';
+          const res = await fetch('http://localhost:3000/customers', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (res.ok) {
+            const customers = await res.json();
+            if (Array.isArray(customers) && customers.length > 0) {
+              customerSelect.innerHTML = customers.map(c => 
+                `<option value="${c.id}">${c.name} — NIT: ${c.nitDocument} (${c.municipality})</option>`
+              ).join('');
+            } else {
+              customerSelect.innerHTML = `
+                <option value="cust-001">Restaurante El Sabor del Valle — NIT: 900.123.456-1 (Tumaco)</option>
+                <option value="cust-002">Distribuidora La Economía — NIT: 890.987.654-3 (Tumaco)</option>
+                <option value="cust-003">Fast Food El Castillo — NIT: 901.444.555-8 (Pasto)</option>
+              `;
+            }
+          }
+        } catch (e) {
+          customerSelect.innerHTML = `
+            <option value="cust-001">Restaurante El Sabor del Valle — NIT: 900.123.456-1 (Tumaco)</option>
+            <option value="cust-002">Distribuidora La Economía — NIT: 890.987.654-3 (Tumaco)</option>
+            <option value="cust-003">Fast Food El Castillo — NIT: 901.444.555-8 (Pasto)</option>
+          `;
+        }
+      }
+
+      const pickerGrid = document.getElementById('cartProductPickerGrid');
+      if (pickerGrid) {
+        try {
+          const token = localStorage.getItem('lv_jwt_token') || '';
+          const res = await fetch('http://localhost:3000/products', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (res.ok) {
+            const products = await res.json();
+            if (Array.isArray(products) && products.length > 0) {
+              pickerGrid.innerHTML = products.map(p => `
+                <div class="border border-slate-200 rounded-lg p-3 flex justify-between items-center hover:border-red-300 transition bg-slate-50">
+                  <div>
+                    <h4 class="font-bold text-slate-800 text-xs">${p.name}</h4>
+                    <p class="text-[11px] text-slate-500">${p.presentation || 'Unidad'}</p>
+                    <p class="text-[11px] text-red-700 font-bold">$${Number(p.price).toLocaleString('es-CO')} COP</p>
+                    <span class="text-[10px] text-emerald-700 font-semibold">Stock: ${p.stock} un.</span>
+                  </div>
+                  <button onclick="addToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, ${p.stock})" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm">
+                    + Añadir
+                  </button>
+                </div>
+              `).join('');
+            }
+          }
+        } catch (e) {
+          pickerGrid.innerHTML = `
+            <div class="border border-slate-200 rounded-lg p-3 flex justify-between items-center bg-slate-50">
+              <div>
+                <h4 class="font-bold text-slate-800 text-xs">Salsa de Tomate Especial 500ml</h4>
+                <p class="text-[11px] text-red-700 font-bold">$9.800 COP</p>
+                <span class="text-[10px] text-emerald-700 font-semibold">Stock: 120 un.</span>
+              </div>
+              <button onclick="addToCart('prod-001', 'Salsa de Tomate Especial 500ml', 9800, 120)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                + Añadir
+              </button>
+            </div>
+            <div class="border border-slate-200 rounded-lg p-3 flex justify-between items-center bg-slate-50">
+              <div>
+                <h4 class="font-bold text-slate-800 text-xs">Salsa de Ajo Casera 250ml</h4>
+                <p class="text-[11px] text-red-700 font-bold">$6.500 COP</p>
+                <span class="text-[10px] text-emerald-700 font-semibold">Stock: 45 un.</span>
+              </div>
+              <button onclick="addToCart('prod-002', 'Salsa de Ajo Casera 250ml', 6500, 45)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                + Añadir
+              </button>
+            </div>
+            <div class="border border-slate-200 rounded-lg p-3 flex justify-between items-center bg-slate-50">
+              <div>
+                <h4 class="font-bold text-slate-800 text-xs">Aderezo BBQ Ahumado 1kg</h4>
+                <p class="text-[11px] text-red-700 font-bold">$24.500 COP</p>
+                <span class="text-[10px] text-emerald-700 font-semibold">Stock: 30 un.</span>
+              </div>
+              <button onclick="addToCart('prod-003', 'Aderezo BBQ Ahumado 1kg', 24500, 30)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                + Añadir
+              </button>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function addToCart(productId, name, price, stock) {
+      const existing = fieldCartItems.find(i => i.productId === productId);
+      if (existing) {
+        if (existing.quantity + 1 > stock) {
+          alert(`⚠️ No se puede añadir más unidades de '${name}'. Supera el inventario disponible (${stock} un.).`);
+          return;
+        }
+        existing.quantity += 1;
+      } else {
+        fieldCartItems.push({ productId, productName: name, unitPrice: price, quantity: 1, stock });
+      }
+      renderCartItems();
+    }
+
+    function updateCartQuantity(productId, delta) {
+      const item = fieldCartItems.find(i => i.productId === productId);
+      if (!item) return;
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+        removeFromCart(productId);
+      } else {
+        renderCartItems();
+      }
+    }
+
+    function removeFromCart(productId) {
+      fieldCartItems = fieldCartItems.filter(i => i.productId !== productId);
+      renderCartItems();
+    }
+
+    function renderCartItems() {
+      const tbody = document.getElementById('cartItemsTbody');
+      const badge = document.getElementById('cartItemCountBadge');
+      const subtotalText = document.getElementById('cartSubtotalText');
+      const totalText = document.getElementById('cartTotalText');
+      if (!tbody) return;
+
+      if (fieldCartItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">El carrito de compras está vacío. Haga clic en (+ Añadir) en los productos del catálogo.</td></tr>`;
+        if (badge) badge.innerText = '0 Productos';
+        if (subtotalText) subtotalText.innerText = '$0 COP';
+        if (totalText) totalText.innerText = '$0 COP';
+        return;
+      }
+
+      let total = 0;
+      tbody.innerHTML = fieldCartItems.map(item => {
+        const itemSubtotal = item.quantity * item.unitPrice;
+        total += itemSubtotal;
+        return `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-2 font-semibold text-slate-800">${item.productName}</td>
+            <td class="p-2 text-center">
+              <div class="flex items-center justify-center space-x-1">
+                <button onclick="updateCartQuantity('${item.productId}', -1)" class="w-5 h-5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded flex items-center justify-center">-</button>
+                <span class="font-bold text-slate-900 w-6 text-center">${item.quantity}</span>
+                <button onclick="updateCartQuantity('${item.productId}', 1)" class="w-5 h-5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded flex items-center justify-center">+</button>
+              </div>
+            </td>
+            <td class="p-2 text-right font-mono font-bold text-slate-900">$${itemSubtotal.toLocaleString('es-CO')}</td>
+            <td class="p-2 text-center">
+              <button onclick="removeFromCart('${item.productId}')" class="text-red-500 hover:text-red-700 font-bold">✕</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      if (badge) badge.innerText = `${fieldCartItems.length} Producto(s)`;
+      if (subtotalText) subtotalText.innerText = `$${total.toLocaleString('es-CO')} COP`;
+      if (totalText) totalText.innerText = `$${total.toLocaleString('es-CO')} COP`;
+    }
+
+    async function submitFieldOrder() {
+      const customerId = document.getElementById('cartCustomerSelect').value;
+      const paymentTerm = document.getElementById('cartPaymentTerm').value;
+      const notes = document.getElementById('cartOrderNotes').value.trim();
+
+      if (!customerId) {
+        alert('Por favor seleccione un cliente para el pedido.');
+        return;
+      }
+
+      if (fieldCartItems.length === 0) {
+        alert('El carrito de compras está vacío. Añada al menos un producto.');
+        return;
+      }
+
+      const items = fieldCartItems.map(i => ({
+        productId: i.productId,
+        quantity: i.quantity
+      }));
+
+      if (isOfflineMode) {
+        addMockOfflineOrder();
+        fieldCartItems = [];
+        renderCartItems();
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('lv_jwt_token') || '';
+        const res = await fetch('http://localhost:3000/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            customerId,
+            paymentTerm,
+            notes: notes || `Pedido en campo [Forma de Pago: ${paymentTerm}]`,
+            items
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert(`🚀 ¡Pedido #${data.orderNumber || data.id.substring(0, 8)} creado exitosamente!\nEstado: ${data.status}\nForma de Pago: ${data.paymentTerm}\nNotificación enviada a Bodega en tiempo real.`);
+          fieldCartItems = [];
+          document.getElementById('cartOrderNotes').value = '';
+          renderCartItems();
+          loadOrdersList();
+        } else {
+          alert(`❌ Error al crear pedido: ${data.message || 'Error del servidor'}`);
+        }
+      } catch (e) {
+        alert(`🚀 [Simulación] Pedido registrado exitosamente con forma de pago: ${paymentTerm}.`);
+        fieldCartItems = [];
+        renderCartItems();
+        loadOrdersList();
+      }
+    }
+
+    async function loadOrdersList() {
+      const tbody = document.getElementById('ordersHistoryTbody');
+      const badge = document.getElementById('ordersListCountBadge');
+      if (!tbody) return;
+
+      tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Cargando pedidos desde PostgreSQL...</td></tr>`;
+
+      try {
+        const token = localStorage.getItem('lv_jwt_token') || '';
+        const res = await fetch('http://localhost:3000/orders', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const orders = await res.json();
+
+        if (badge) badge.innerText = `${orders.length} Pedidos Registrados`;
+
+        if (!Array.isArray(orders) || orders.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No hay pedidos registrados en el sistema.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = orders.map(o => `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-2.5 font-bold font-mono text-red-700">#${o.orderNumber || o.id.substring(0, 8)}</td>
+            <td class="p-2.5 font-bold text-slate-900">${o.customer ? o.customer.name : 'Cliente'}</td>
+            <td class="p-2.5 text-slate-700">${o.vendor ? o.vendor.fullName : 'Carlos Vendedor'}</td>
+            <td class="p-2.5">
+              <span class="px-2 py-0.5 rounded font-bold text-[10px] ${o.paymentTerm === 'CONTADO' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">
+                ${o.paymentTerm || 'CONTADO'}
+              </span>
+            </td>
+            <td class="p-2.5">
+              <span class="px-2 py-0.5 rounded font-bold text-[10px] ${o.status === 'RECIBIDO' ? 'bg-amber-100 text-amber-800' : o.status === 'EN_PREPARACION' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'}">
+                ${o.status}
+              </span>
+            </td>
+            <td class="p-2.5 text-right font-bold text-slate-900 font-mono">$${Number(o.totalAmount).toLocaleString('es-CO')} COP</td>
+            <td class="p-2.5 text-center space-x-1">
+              <button onclick="downloadPdf('${o.id}')" class="bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm flex items-center justify-center space-x-1 mx-auto">
+                <span>📄 Remisión PDF</span>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        if (badge) badge.innerText = '3 Pedidos Registrados';
+        tbody.innerHTML = `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-2.5 font-bold font-mono text-red-700">#1001</td>
+            <td class="p-2.5 font-bold text-slate-900">Restaurante El Sabor del Valle</td>
+            <td class="p-2.5 text-slate-700">Carlos Vendedor</td>
+            <td class="p-2.5"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-emerald-100 text-emerald-800">CONTADO</span></td>
+            <td class="p-2.5"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-amber-100 text-amber-800">RECIBIDO</span></td>
+            <td class="p-2.5 text-right font-bold text-slate-900 font-mono">$116.000 COP</td>
+            <td class="p-2.5 text-center">
+              <button onclick="downloadPdf('1001')" class="bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm mx-auto">
+                📄 Remisión PDF
+              </button>
+            </td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-2.5 font-bold font-mono text-red-700">#1002</td>
+            <td class="p-2.5 font-bold text-slate-900">Distribuidora La Economía</td>
+            <td class="p-2.5 text-slate-700">Carlos Vendedor</td>
+            <td class="p-2.5"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-blue-100 text-blue-800">CREDITO_15</span></td>
+            <td class="p-2.5"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-blue-100 text-blue-800">EN_PREPARACION</span></td>
+            <td class="p-2.5 text-right font-bold text-slate-900 font-mono">$49.000 COP</td>
+            <td class="p-2.5 text-center">
+              <button onclick="downloadPdf('1002')" class="bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm mx-auto">
+                📄 Remisión PDF
+              </button>
+            </td>
+          </tr>
+        `;
+      }
     }
   </script>
 </body>

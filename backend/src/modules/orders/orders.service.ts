@@ -15,7 +15,7 @@ export class OrdersService {
   ) {}
 
   async create(createOrderDto: CreateOrderDto, vendorId: string) {
-    const { id: customId, customerId, items, notes, clientCreatedAt } = createOrderDto;
+    const { id: customId, customerId, items, paymentTerm, notes, clientCreatedAt } = createOrderDto;
 
     // 1. Idempotency Check: if customId is provided and already exists, return existing order
     if (customId) {
@@ -84,6 +84,7 @@ export class OrdersService {
           customerId,
           vendorId,
           status: initialStatus,
+          paymentTerm: paymentTerm || 'CONTADO',
           totalAmount,
           notes,
           clientCreatedAt: clientCreatedAt ? new Date(clientCreatedAt) : new Date(),

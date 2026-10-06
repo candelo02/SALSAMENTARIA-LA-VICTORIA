@@ -130,6 +130,7 @@ model Order {
   customerId     String
   vendorId       String
   status         OrderStatusEnum @default(CREADO)
+  paymentTerm    String          @default("CONTADO")
   totalAmount    Decimal         @db.Decimal(12, 2)
   notes          String?
   clientCreatedAt DateTime       @default(now())
