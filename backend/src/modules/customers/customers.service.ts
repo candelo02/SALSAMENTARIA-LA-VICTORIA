@@ -45,4 +45,26 @@ export class CustomersService {
 
     return customer;
   }
+
+  async update(id: string, updateCustomerDto: any) {
+    const customer = await this.prisma.customer.findUnique({ where: { id } });
+    if (!customer) {
+      throw new NotFoundException(`Cliente con ID ${id} no encontrado.`);
+    }
+
+    return this.prisma.customer.update({
+      where: { id },
+      data: updateCustomerDto,
+    });
+  }
+
+  async findByMunicipality(municipality: string) {
+    return this.prisma.customer.findMany({
+      where: {
+        municipality: { contains: municipality, mode: 'insensitive' },
+        isActive: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+  }
 }
